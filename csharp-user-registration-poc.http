@@ -1,0 +1,47 @@
+@HostAddr = http://localhost:5291
+
+GET {{HostAddr}}/users/
+
+###
+
+POST {{HostAddr}}/users/
+Content-Type: application/json
+
+{
+    "email": "newuser@example.com",
+    "password": "encryptedpassword321"
+}
+
+###
+
+GET {{HostAddr}}/users/2
+
+###
+
+POST {{HostAddr}}/users/
+Content-Type: application/json
+
+{
+    "email": "felipe@email.com",
+    "password": "mypassword101"
+}
+
+###
+
+PUT {{HostAddr}}/users/2
+Content-Type: application/json
+
+{
+    "email": "updateduser@example.com",
+    "password": "differentpassword123"
+}
+
+###
+
+GET {{HostAddr}}/users
+
+###
+
+DELETE {{HostAddr}}/users/1
+
+###
