@@ -921,7 +921,16 @@ public sealed class User
         string zipCode)
     {
         // validar email, senha, telefone e endereco antes de criar
-        return new User(nextId++, email, password, phone, addressLine, addressComplement, city, state, zipCode);
+        return new User(
+            nextId++,
+            email,
+            password,
+            phone,
+            addressLine,
+            addressComplement,
+            city,
+            state,
+            zipCode);
     }
 
     public void ChangeEmail(string email)
@@ -968,7 +977,7 @@ O endpoint ou store não deve mais fazer `user.Email = request.Email` nem `user.
 - [ ] Mover o modelo interno `User` para `Models/User.cs`.
 - [ ] Transformar `User` em rich class simples.
 - [ ] Trocar setters públicos por `private set`.
-- [ ] Criar factory `User.Create(email, password)`.
+- [ ] Criar factory `User.Create(...)` recebendo email, senha, telefone e endereço.
 - [ ] Criar método `ChangeEmail(email)`.
 - [ ] Criar método `ChangePassword(password)`.
 - [ ] Criar método `ChangePhone(phone)`.
@@ -1104,7 +1113,7 @@ Também entra reforço de DDD tático:
 - `Api` contém HTTP, endpoints, OpenAPI e configuração web.
 - Template `webapi` cria exemplo inicial; nesta tarefa ele deve ser removido ou substituído pelo código da POC.
 - `Domain` não deve usar DataAnnotations, DTOs HTTP, `Results`, `ProblemDetails`, Scalar, ASP.NET Core ou EF Core.
-- A entidade `User` deve continuar sendo criada por `User.Create(...)` e alterada por métodos como `ChangeEmail(...)`.
+- A entidade `User` deve continuar sendo criada por `User.Create(...)` e alterada por métodos como `ChangeEmail(...)`, `ChangePhone(...)` e `ChangeAddress(...)`.
 
 ### Exemplo orientativo
 
