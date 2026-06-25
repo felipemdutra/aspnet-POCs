@@ -1,47 +1,208 @@
 @HostAddr = http://localhost:5291
 
-GET {{HostAddr}}/users/
+### List users
+GET {{HostAddr}}/users
 
 ###
 
-POST {{HostAddr}}/users/
+### Create user (valid)
+POST {{HostAddr}}/users
 Content-Type: application/json
 
 {
     "email": "newuser@example.com",
-    "password": "encryptedpassword321"
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
 }
 
 ###
 
+### Create user (empty email - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+}
+
+###
+
+### Create user (invalid email format - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "not-an-email",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+}
+
+###
+
+### Create user (short password - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "shortpw@example.com",
+    "password": "abc",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+}
+
+###
+
+### Create user (invalid ZIP code - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "badcep@example.com",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "abc"
+}
+
+###
+
+### Create user (state > 2 chars - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "badstate@example.com",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SPA",
+    "zipCode": "01310-100"
+}
+
+###
+
+### Create user (missing required address fields - should return 400)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "noaddress@example.com",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888"
+}
+
+###
+
+### Create user (only optional fields are null - should return 201)
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "minimaluser@example.com",
+    "password": "encryptedpassword321",
+    "phone": null,
+    "addressLine": "789 Pine Rd",
+    "addressComplement": null,
+    "city": "Belo Horizonte",
+    "state": "MG",
+    "zipCode": "30110000"
+}
+
+###
+
+### Get user by id
 GET {{HostAddr}}/users/2
 
 ###
 
-POST {{HostAddr}}/users/
-Content-Type: application/json
-
-{
-    "email": "felipe@email.com",
-    "password": "mypassword101"
-}
-
-###
-
+### Update user (valid)
 PUT {{HostAddr}}/users/2
 Content-Type: application/json
 
 {
     "email": "updateduser@example.com",
-    "password": "differentpassword123"
+    "password": "differentpassword123",
+    "phone": "+5511988887777",
+    "addressLine": "456 Oak Ave",
+    "addressComplement": "Apt 12",
+    "city": "Rio de Janeiro",
+    "state": "RJ",
+    "zipCode": "20040-020"
 }
 
 ###
 
-GET {{HostAddr}}/users
+### Update user (invalid email - should return 400)
+PUT {{HostAddr}}/users/2
+Content-Type: application/json
+
+{
+    "email": "not-an-email",
+    "password": "differentpassword123",
+    "phone": "+5511988887777",
+    "addressLine": "456 Oak Ave",
+    "addressComplement": "Apt 12",
+    "city": "Rio de Janeiro",
+    "state": "RJ",
+    "zipCode": "20040-020"
+}
 
 ###
 
+### Update user that does not exist (should return 404)
+PUT {{HostAddr}}/users/999
+Content-Type: application/json
+
+{
+    "email": "ghost@example.com",
+    "password": "encryptedpassword321",
+    "phone": "+5511999998888",
+    "addressLine": "1 Ghost St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+}
+
+###
+
+### Get user that does not exist (should return 404)
+GET {{HostAddr}}/users/999
+
+###
+
+### Delete user that does not exist (should return 404)
+DELETE {{HostAddr}}/users/999
+
+###
+
+### Delete user
 DELETE {{HostAddr}}/users/1
 
 ###
