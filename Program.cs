@@ -1,11 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddValidation();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 var users = new List<User>
 {
@@ -27,18 +35,32 @@ app.MapPost("/users", ([FromBody] CreateUserRequest createUserDto) =>
     users.Add(user);
 
     return Results.Created($"/users/{user.Id}", UserResponse.From(user));
-});
+})
+.WithName("CreateUser")
+.WithSummary("Creates a new user")
+.WithDescription("Registers a new user with the provided account and address details. Returns the created user resource along with its location URI.")
+.Produces<UserResponse>(StatusCodes.Status201Created)
+.ProducesValidationProblem(StatusCodes.Status400BadRequest);
 
 app.MapGet("/users/{id:long}", (long id) =>
 {
     var user = users.FirstOrDefault(u => u.Id == id);
     return user == null ? Results.NotFound() : Results.Ok(UserResponse.From(user));
-});
+})
+.WithName("GetUserById")
+.WithSummary("Gets a user by ID.")
+.WithDescription("Retrieves the details of a single user identified by their numeric ID. Returns 404 if no user with the given ID exists.")
+.Produces<UserResponse>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound);
 
 app.MapGet("/users", () =>
 {
     return Results.Ok(users.Select(UserResponse.From));
-});
+})
+.WithName("GetUsers")
+.WithSummary("Gets all users")
+.WithDescription("Retrieves the full list of registered users.")
+.Produces<IEnumerable<UserResponse>>(StatusCodes.Status200OK);
 
 app.MapPut("/users/{id:long}", (long id, [FromBody] UpdateUserRequest newUser) =>
 {
@@ -59,7 +81,12 @@ app.MapPut("/users/{id:long}", (long id, [FromBody] UpdateUserRequest newUser) =
     user.ZipCode = newUser.ZipCode;
 
     return Results.Ok(UserResponse.From(user));
-});
+})
+.WithName("UpdateUser")
+.WithSummary("Updates an existing user")
+.WithDescription("Replaces the account and address details of the user identified by the given ID with the values provided in the request body. Returns 404 if no user with the given ID exists")
+.Produces<UserResponse>(StatusCodes.Status200OK)
+.ProducesValidationProblem(StatusCodes.Status400BadRequest);
 
 app.MapDelete("/users/{id:long}", (long id) =>
 {
@@ -72,7 +99,12 @@ app.MapDelete("/users/{id:long}", (long id) =>
     users.Remove(user);
 
     return Results.NoContent();
-});
+})
+.WithName("Delete user")
+.WithSummary("Deletes a user")
+.WithDescription("Permanently removes the user identified by the given ID. Returns 404 if no user with the given ID exists, or 204 if the deletion succeeds.")
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound);
 
 app.Run("http://localhost:5291");
 

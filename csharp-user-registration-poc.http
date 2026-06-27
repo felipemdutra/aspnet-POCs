@@ -206,3 +206,7 @@ DELETE {{HostAddr}}/users/999
 DELETE {{HostAddr}}/users/1
 
 ###
+
+GET {{HostAddr}}/openapi/v1.json
+
+###
