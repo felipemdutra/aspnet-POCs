@@ -6,8 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddValidation();
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
 {
@@ -51,7 +55,7 @@ app.MapGet("/users/{id:long}", (long id) =>
 .WithSummary("Gets a user by ID.")
 .WithDescription("Retrieves the details of a single user identified by their numeric ID. Returns 404 if no user with the given ID exists.")
 .Produces<UserResponse>(StatusCodes.Status200OK)
-.Produces(StatusCodes.Status404NotFound);
+.ProducesProblem(StatusCodes.Status404NotFound);
 
 app.MapGet("/users", () =>
 {
@@ -86,7 +90,8 @@ app.MapPut("/users/{id:long}", (long id, [FromBody] UpdateUserRequest newUser) =
 .WithSummary("Updates an existing user")
 .WithDescription("Replaces the account and address details of the user identified by the given ID with the values provided in the request body. Returns 404 if no user with the given ID exists")
 .Produces<UserResponse>(StatusCodes.Status200OK)
-.ProducesValidationProblem(StatusCodes.Status400BadRequest);
+.ProducesValidationProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status404NotFound);
 
 app.MapDelete("/users/{id:long}", (long id) =>
 {
@@ -104,7 +109,7 @@ app.MapDelete("/users/{id:long}", (long id) =>
 .WithSummary("Deletes a user")
 .WithDescription("Permanently removes the user identified by the given ID. Returns 404 if no user with the given ID exists, or 204 if the deletion succeeds.")
 .Produces(StatusCodes.Status204NoContent)
-.Produces(StatusCodes.Status404NotFound);
+.ProducesProblem(StatusCodes.Status404NotFound);
 
 app.Run("http://localhost:5291");
 
