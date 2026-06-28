@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace UserRegistrationPOC.Models;
+namespace UserRegistration.Domain.Models;
 
 /// <summary>
 /// Rich domain model for a registered user.
@@ -62,7 +62,7 @@ public sealed class User
 
     /// <summary>
     /// Factory method. Builds a User only after validating every required
-    /// invariant. Throws <see cref="ArgumentException"/> if any value is
+    /// invariant. Throws ArgumentException if any value is
     /// invalid, so the entity can never exist in an invalid state.
     /// </summary>
     public static User Create(

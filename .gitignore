@@ -1,6 +1,81 @@
-.vs/
+# ============================================================
+# .NET / Visual Studio / Rider build artifacts
+# ============================================================
+
+# Build output
 bin/
 obj/
-appsettings.Development.json
+
+# Visual Studio
+.vs/
 *.user
+*.suo
+*.userprefs
+
+# JetBrains Rider
+.idea/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# ============================================================
+# NuGet
+# ============================================================
+
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.assets.json
+project.nuget.cache
+
+# ============================================================
+# Local configuration overrides
+# ============================================================
+
+# appsettings.Development.json typically contains local secrets,
+# connection strings, or per-developer toggles. Never commit it.
+appsettings.Development.json
+appsettings.*.local.json
+
+# ============================================================
+# Test artifacts (forward-compatible with future POCs that add tests)
+# ============================================================
+
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage.*.xml
+coverage.*.json
+
+# ============================================================
+# Smoke-test scratch files created during manual verification
+# ============================================================
+
+api.out
+api.err
+test-*.json
+
+# ============================================================
+# Misc / OS
+# ============================================================
+
+# Thumbs.db (Windows)
+Thumbs.db
+
+# Desktop.ini (Windows)
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# ============================================================
+# Project-specific
+# ============================================================
+
+# Personal documentation not meant for the public POC
 docs/

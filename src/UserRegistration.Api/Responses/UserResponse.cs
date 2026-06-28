@@ -1,4 +1,4 @@
-namespace UserRegistrationPOC.Responses;
+namespace UserRegistration.Api.Responses;
 
 /// <summary>
 /// DTO returned by every user endpoint. Notice that Password is NOT

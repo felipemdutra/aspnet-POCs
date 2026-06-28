@@ -1,11 +1,10 @@
 using Scalar.AspNetCore;
-using UserRegistrationPOC.Endpoints;
-using UserRegistrationPOC.Services;
+using UserRegistration.Api.Endpoints;
+using UserRegistration.Application.Abstractions;
+using UserRegistration.Infrastructure.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Framework-level services: validation of DTOs, OpenAPI document,
-// and ProblemDetails for predictable error responses.
 builder.Services.AddValidation();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
@@ -21,8 +20,6 @@ var app = builder.Build();
 // ProblemDetails response, and empty status code bodies are filled.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-
-Console.WriteLine("HI!");
 
 // OpenAPI document and Scalar UI are only useful while developing,
 // so we gate them behind the Development environment.

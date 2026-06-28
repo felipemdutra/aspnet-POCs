@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace UserRegistrationPOC.Requests;
+namespace UserRegistration.Api.Requests;
 
 /// <summary>
-/// DTO used as the body of PUT /users/{id}.
-/// Mirrors the create payload because the current contract performs
-/// full replacement of the editable user fields.
+/// DTO used as the body of POST /users.
+/// Contains only the fields the client is allowed to send when creating
+/// a new user account. Password is accepted here on purpose but never
+/// returned in any response.
 /// </summary>
-public sealed class UpdateUserRequest
+public sealed class CreateUserRequest
 {
     [Required]
     [EmailAddress]

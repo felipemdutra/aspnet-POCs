@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="csharp-user-registration-poc.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/UserRegistration.Api/UserRegistration.Api.csproj" />
+    <Project Path="src/UserRegistration.Application/UserRegistration.Application.csproj" />
+    <Project Path="src/UserRegistration.Domain/UserRegistration.Domain.csproj" />
+    <Project Path="src/UserRegistration.Infrastructure/UserRegistration.Infrastructure.csproj" />
+  </Folder>
 </Solution>

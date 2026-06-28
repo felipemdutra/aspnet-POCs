@@ -1,6 +1,6 @@
-using UserRegistrationPOC.Models;
+using UserRegistration.Domain.Models;
 
-namespace UserRegistrationPOC.Services;
+namespace UserRegistration.Application.Abstractions;
 
 /// <summary>
 /// Contract that any user storage must implement. The endpoints depend

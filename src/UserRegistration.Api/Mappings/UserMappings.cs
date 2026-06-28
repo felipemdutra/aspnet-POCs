@@ -1,7 +1,7 @@
-using UserRegistrationPOC.Models;
-using UserRegistrationPOC.Responses;
+using UserRegistration.Api.Responses;
+using UserRegistration.Domain.Models;
 
-namespace UserRegistrationPOC.Mappings;
+namespace UserRegistration.Api.Mappings;
 
 /// <summary>
 /// Centralises the conversion between the internal model and the

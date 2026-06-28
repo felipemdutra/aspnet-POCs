@@ -1,11 +1,11 @@
-using UserRegistrationPOC.Mappings;
-using UserRegistrationPOC.Models;
-using UserRegistrationPOC.Requests;
-using UserRegistrationPOC.Responses;
-using UserRegistrationPOC.Services;
 using Microsoft.AspNetCore.Mvc;
+using UserRegistration.Api.Mappings;
+using UserRegistration.Api.Requests;
+using UserRegistration.Api.Responses;
+using UserRegistration.Application.Abstractions;
+using UserRegistration.Domain.Models;
 
-namespace UserRegistrationPOC.Endpoints;
+namespace UserRegistration.Api.Endpoints;
 
 /// <summary>
 /// Hosts every HTTP route related to users. Exposed as an extension

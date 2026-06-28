@@ -1,6 +1,7 @@
-using UserRegistrationPOC.Models;
+using UserRegistration.Application.Abstractions;
+using UserRegistration.Domain.Models;
 
-namespace UserRegistrationPOC.Services;
+namespace UserRegistration.Infrastructure.Users;
 
 /// <summary>
 /// In-memory user storage. This is fine in this step of the POC.
