@@ -4,6 +4,28 @@ A trilha sai da Minimal API inicial em memória e chega até uma solução modul
 
 Cada tarefa primeiro entende a limitação da etapa anterior, depois introduz o menor conceito novo que resolve essa limitação.
 
+## Status atual da revisão
+
+Esta revisão avalia cada tarefa como um bloco fechado. Uma tarefa só está completa quando todos os pontos obrigatórios do roteiro foram atendidos. Quando uma tarefa tem partes corretas, mas ainda mantém pendências obrigatórias, ela fica desmarcada e a pendência é explicada na própria tarefa.
+
+Os commits da POC2 entregam boa parte do roteiro técnico esperado: semântica HTTP, DTOs, validação, OpenAPI/Scalar, ProblemDetails, `User` rica, projetos separados e separação básica entre `Api`, `Application`, `Domain` e `Infrastructure`.
+
+O smoke test atual confirma que `GET /users` retorna `200`, `GET /users/999` retorna `404` com ProblemDetails, `POST /users` válido retorna `201`, payloads inválidos retornam `400` e a resposta de criação não contém `password`.
+
+Resumo de completude por tarefa:
+
+- [x] TAREFA 01: leitura da estrutura atual, agora em solução modular sob `src/`.
+- [x] TAREFA 02: rotas, verbos HTTP, status codes e `Location` de criação.
+- [x] TAREFA 03: DTOs de request/response e senha fora das responses.
+- [x] TAREFA 04: validação com DataAnnotations e sem biblioteca externa.
+- [ ] TAREFA 04.1: contato e endereço foram implementados, mas falta documentar telefone inválido no `.http`.
+- [x] TAREFA 05: OpenAPI e Scalar em ambiente de desenvolvimento.
+- [x] TAREFA 06: ProblemDetails para erros comuns.
+- [ ] TAREFA 07: a organização em arquivos e a `User` rica existem, mas a orquestração ainda ficou no endpoint.
+- [ ] TAREFA 08: os projetos existem, mas a camada `Application` ainda não orquestra casos de uso.
+
+As pendências que impedem conclusão foram carregadas para a [POC3](POC3.md), que passa a ser o roteiro de correção. O POC2 deve registrar a avaliação do estado atual; a POC3 deve concentrar os passos de execução.
+
 ## Glossário mínimo para começar
 
 - `HTTP`: protocolo usado pelo navegador, frontend ou arquivo `.http` para conversar com a API.
@@ -39,17 +61,21 @@ Quando a referência oficial é ampla demais para um aluno iniciante, a tarefa i
 
 ## TAREFA 01 - Entender a POC atual
 
+**Status da tarefa:** [x] Completa
+
 ### Apresentação
 
 Esta tarefa não muda código. Ela serve para o aluno reconhecer os arquivos principais, entender onde a aplicação começa e identificar quais endpoints já existem.
 
 ### Dica para iniciante
 
-- `csharp-user-registration-poc.csproj` é o arquivo de configuração do projeto C#.
+- `csharp-user-registration-poc.slnx` agrupa os projetos da solução.
+- `src/UserRegistration.Api/UserRegistration.Api.csproj` é o arquivo de configuração do projeto Web API.
 - `TargetFramework` mostra a versão do .NET usada pelo projeto.
 - `Nullable` ajuda o compilador a avisar sobre possíveis valores nulos.
 - `ImplicitUsings` ativa imports automáticos comuns do C#.
-- `Users.cs` contém o código atual da API.
+- `Program.cs` contém a configuração principal da API.
+- `UserEndpoints.cs` contém as rotas HTTP de usuários.
 - `WebApplication.CreateBuilder` prepara serviços e configuração da aplicação.
 - `app.Build()` monta a aplicação antes dela começar a responder HTTP.
 - `MapGet`, `MapPost`, `MapPut` e `MapDelete` criam endpoints.
@@ -72,28 +98,30 @@ GET /users - lista usuários
 
 ### Checklist de execução
 
-- [ ] Abrir `csharp-user-registration-poc.csproj`.
-- [ ] Identificar `TargetFramework`, `Nullable`, `ImplicitUsings` e pacotes NuGet, usando a dica acima.
-- [ ] Abrir `Users.cs`.
-- [ ] Localizar `WebApplication.CreateBuilder`.
-- [ ] Localizar `app.Build()`.
-- [ ] Localizar `MapGet`, `MapPost`, `MapPut` e `MapDelete`.
-- [ ] Listar cada endpoint existente no formato `MÉTODO rota`, por exemplo `GET /users`.
-- [ ] Identificar o método HTTP de cada endpoint: `GET`, `POST`, `PUT` ou `DELETE`.
-- [ ] Identificar onde a lista `users` é criada.
-- [ ] Identificar que os dados estão em memória.
-- [ ] Identificar que a senha faz parte do modelo atual.
-- [ ] Abrir `csharp-user-registration-poc.http`.
-- [ ] Comparar cada chamada `.http` com as rotas reais do código.
-- [ ] Rodar o build antes de qualquer alteração.
+- [x] Abrir `csharp-user-registration-poc.slnx`.
+- [x] Abrir `src/UserRegistration.Api/UserRegistration.Api.csproj`.
+- [x] Identificar `TargetFramework`, `Nullable`, `ImplicitUsings` e pacotes NuGet, usando a dica acima.
+- [x] Abrir `src/UserRegistration.Api/Program.cs`.
+- [x] Abrir `src/UserRegistration.Api/Endpoints/UserEndpoints.cs`.
+- [x] Localizar `WebApplication.CreateBuilder`.
+- [x] Localizar `app.Build()`.
+- [x] Localizar `MapGet`, `MapPost`, `MapPut` e `MapDelete`.
+- [x] Listar cada endpoint existente no formato `MÉTODO rota`, por exemplo `GET /users`.
+- [x] Identificar o método HTTP de cada endpoint: `GET`, `POST`, `PUT` ou `DELETE`.
+- [x] Identificar onde a lista `users` é criada em `InMemoryUserStore`.
+- [x] Identificar que os dados estão em memória.
+- [x] Identificar que a senha faz parte do modelo de domínio, mas não das responses.
+- [x] Abrir `csharp-user-registration-poc.http`.
+- [x] Comparar cada chamada `.http` com as rotas reais do código.
+- [x] Rodar o build antes de qualquer alteração.
 
 ### Checklist de saída
 
-- [ ] As rotas e métodos HTTP atuais foram anotados.
-- [ ] O ponto de entrada da aplicação foi identificado.
-- [ ] O armazenamento em memória foi identificado.
-- [ ] O campo `Password` no modelo atual foi identificado.
-- [ ] Nenhum código foi alterado nesta tarefa.
+- [x] As rotas e métodos HTTP atuais foram anotados.
+- [x] O ponto de entrada da aplicação foi identificado.
+- [x] O armazenamento em memória foi identificado.
+- [x] O campo `Password` no modelo atual foi identificado.
+- [x] Nenhum código foi alterado nesta tarefa.
 
 ### Perguntas de autoavaliação
 
@@ -108,7 +136,7 @@ GET /users - lista usuários
 ```bash
 dotnet --info
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 ### Referências para estudo
@@ -117,6 +145,8 @@ dotnet run --project csharp-user-registration-poc.csproj
 - [Route handlers em Minimal APIs - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/route-handlers?view=aspnetcore-10.0)
 
 ## TAREFA 02 - Corrigir semântica HTTP e status codes
+
+**Status da tarefa:** [x] Completa
 
 ### Apresentação
 
@@ -158,26 +188,26 @@ O exemplo não resolve a tarefa inteira. Ele só mostra o tipo de resposta esper
 
 ### Checklist de execução
 
-- [ ] Padronizar todas as rotas com o prefixo `/users`.
-- [ ] Garantir que `GET /users` retorna `200 OK`.
-- [ ] Garantir que `GET /users/{id}` retorna `200 OK` quando encontra usuário.
-- [ ] Garantir que `GET /users/{id}` retorna `404 Not Found` quando não encontra usuário.
-- [ ] Garantir que `POST /users` retorna `201 Created`.
-- [ ] Garantir que o `Location` do `POST` aponta para `/users/{id}`.
-- [ ] Garantir que `PUT /users/{id}` retorna `200 OK` quando atualiza usuário.
-- [ ] Garantir que `PUT /users/{id}` retorna `404 Not Found` quando não encontra usuário.
-- [ ] Garantir que `DELETE /users/{id}` retorna `204 No Content` quando remove usuário.
-- [ ] Garantir que `DELETE /users/{id}` retorna `404 Not Found` quando não encontra usuário.
-- [ ] Atualizar `csharp-user-registration-poc.http` com casos de sucesso e erro.
+- [x] Padronizar todas as rotas com o prefixo `/users`.
+- [x] Garantir que `GET /users` retorna `200 OK`.
+- [x] Garantir que `GET /users/{id}` retorna `200 OK` quando encontra usuário.
+- [x] Garantir que `GET /users/{id}` retorna `404 Not Found` quando não encontra usuário.
+- [x] Garantir que `POST /users` retorna `201 Created`.
+- [x] Garantir que o `Location` do `POST` aponta para `/users/{id}`.
+- [x] Garantir que `PUT /users/{id}` retorna `200 OK` quando atualiza usuário.
+- [x] Garantir que `PUT /users/{id}` retorna `404 Not Found` quando não encontra usuário.
+- [x] Garantir que `DELETE /users/{id}` retorna `204 No Content` quando remove usuário.
+- [x] Garantir que `DELETE /users/{id}` retorna `404 Not Found` quando não encontra usuário.
+- [x] Atualizar `csharp-user-registration-poc.http` com casos de sucesso e erro.
 
 ### Checklist de saída
 
-- [ ] Todas as rotas começam com `/users`.
-- [ ] O endpoint de criação retorna `201 Created`.
-- [ ] O endpoint de criação retorna uma URL de recurso criado.
-- [ ] O endpoint de remoção bem-sucedida retorna `204 No Content`.
-- [ ] Usuário inexistente retorna `404 Not Found`.
-- [ ] O `.http` permite testar o caminho feliz e pelo menos um erro.
+- [x] Todas as rotas começam com `/users`.
+- [x] O endpoint de criação retorna `201 Created`.
+- [x] O endpoint de criação retorna uma URL de recurso criado.
+- [x] O endpoint de remoção bem-sucedida retorna `204 No Content`.
+- [x] Usuário inexistente retorna `404 Not Found`.
+- [x] O `.http` permite testar o caminho feliz e pelo menos um erro.
 
 ### Perguntas de autoavaliação
 
@@ -190,17 +220,17 @@ O exemplo não resolve a tarefa inteira. Ele só mostra o tipo de resposta esper
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] `GET /users`
-- [ ] `POST /users`
-- [ ] `GET /users/{id}`
-- [ ] `PUT /users/{id}`
-- [ ] `DELETE /users/{id}`
-- [ ] `GET /users/999`
+- [x] `GET /users`
+- [x] `POST /users`
+- [x] `GET /users/{id}`
+- [x] `PUT /users/{id}`
+- [x] `DELETE /users/{id}`
+- [x] `GET /users/999`
 
 ### Referências para estudo
 
@@ -210,6 +240,8 @@ Verificar manualmente:
 - [Routing no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-10.0)
 
 ## TAREFA 03 - Criar DTOs e não expor senha
+
+**Status da tarefa:** [x] Completa
 
 ### Apresentação
 
@@ -255,27 +287,27 @@ O aluno ainda precisa decidir onde usar cada DTO nos endpoints e onde fazer o ma
 
 ### Checklist de execução
 
-- [ ] Criar `CreateUserRequest`.
-- [ ] Adicionar em `CreateUserRequest` apenas os campos que o cliente pode enviar na criação: `Email` e `Password`.
-- [ ] Criar `UpdateUserRequest`.
-- [ ] Adicionar em `UpdateUserRequest` apenas os campos que o cliente pode alterar nesta etapa: `Email` e `Password`.
-- [ ] Criar `UserResponse`.
-- [ ] Adicionar em `UserResponse` apenas os campos seguros para resposta: `Id` e `Email`.
-- [ ] Alterar `POST /users` para receber `CreateUserRequest`.
-- [ ] Alterar `PUT /users/{id}` para receber `UpdateUserRequest`.
-- [ ] Alterar `GET /users` para retornar lista de `UserResponse`.
-- [ ] Alterar `GET /users/{id}` para retornar `UserResponse`.
-- [ ] Criar um mapeamento explícito de `User` para `UserResponse`.
-- [ ] Garantir que `Password` nunca aparece em response.
-- [ ] Atualizar `.http` para conferir que a resposta de criação não contém `password`.
+- [x] Criar `CreateUserRequest`.
+- [x] Adicionar em `CreateUserRequest` apenas campos que o cliente pode enviar, começando por `Email` e `Password`.
+- [x] Criar `UpdateUserRequest`.
+- [x] Adicionar em `UpdateUserRequest` apenas campos que o cliente pode alterar, começando por `Email` e `Password`.
+- [x] Criar `UserResponse`.
+- [x] Adicionar em `UserResponse` apenas campos seguros para resposta, sem `Password`.
+- [x] Alterar `POST /users` para receber `CreateUserRequest`.
+- [x] Alterar `PUT /users/{id}` para receber `UpdateUserRequest`.
+- [x] Alterar `GET /users` para retornar lista de `UserResponse`.
+- [x] Alterar `GET /users/{id}` para retornar `UserResponse`.
+- [x] Criar um mapeamento explícito de `User` para `UserResponse`.
+- [x] Garantir que `Password` nunca aparece em response.
+- [x] Atualizar `.http` para conferir que a resposta de criação não contém `password`.
 
 ### Checklist de saída
 
-- [ ] Existe um DTO específico para criação.
-- [ ] Existe um DTO específico para atualização.
-- [ ] Existe um DTO específico para resposta.
-- [ ] Nenhuma resposta HTTP contém `password`.
-- [ ] O modelo interno pode mudar sem mudar automaticamente o contrato HTTP.
+- [x] Existe um DTO específico para criação.
+- [x] Existe um DTO específico para atualização.
+- [x] Existe um DTO específico para resposta.
+- [x] Nenhuma resposta HTTP contém `password`.
+- [x] O modelo interno pode mudar sem mudar automaticamente o contrato HTTP.
 
 ### Perguntas de autoavaliação
 
@@ -288,16 +320,16 @@ O aluno ainda precisa decidir onde usar cada DTO nos endpoints e onde fazer o ma
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] `POST /users` aceita email e senha.
-- [ ] A resposta de `POST /users` contém `id` e `email`.
-- [ ] A resposta de `POST /users` não contém `password`.
-- [ ] `GET /users` não contém `password`.
-- [ ] `GET /users/{id}` não contém `password`.
+- [x] `POST /users` aceita email e senha.
+- [x] A resposta de `POST /users` contém `id` e `email`.
+- [x] A resposta de `POST /users` não contém `password`.
+- [x] `GET /users` não contém `password`.
+- [x] `GET /users/{id}` não contém `password`.
 
 ### Referências para estudo
 
@@ -305,6 +337,8 @@ Verificar manualmente:
 - [Model validation no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-10.0)
 
 ## TAREFA 04 - Adicionar validação com DataAnnotations e validação manual
+
+**Status da tarefa:** [x] Completa
 
 ### Apresentação
 
@@ -412,36 +446,36 @@ public static Dictionary<string, string[]> Validate(CreateUserRequest request)
 
 ### Checklist de execução
 
-- [ ] Adicionar DataAnnotations em `CreateUserRequest`.
-- [ ] Adicionar `using System.ComponentModel.DataAnnotations;` nos arquivos de request.
-- [ ] Marcar `Email` como obrigatório.
-- [ ] Validar `Email` com formato de email.
-- [ ] Definir tamanho máximo para `Email`.
-- [ ] Marcar `Password` como obrigatório.
-- [ ] Definir tamanho mínimo para `Password`.
-- [ ] Definir tamanho máximo para `Password`.
-- [ ] Registrar no roteiro que .NET 10 tem atributos prontos como `[EmailAddress]`, `[Phone]`, `[CreditCard]`, `[Url]` e `[RegularExpression]`.
-- [ ] Registrar que CPF não possui atributo nativo no .NET 10 e exige validação manual/customizada.
-- [ ] Repetir as regras necessárias em `UpdateUserRequest`.
-- [ ] Habilitar validação para Minimal APIs em .NET 10.
-- [ ] Ler o exemplo de validação manual e comparar com DataAnnotations.
-- [ ] Registrar no próprio roteiro que a implementação principal desta tarefa usa DataAnnotations.
-- [ ] Não adicionar FluentValidation nesta tarefa.
-- [ ] Atualizar `.http` com payload sem email.
-- [ ] Atualizar `.http` com email inválido.
-- [ ] Atualizar `.http` com senha curta.
-- [ ] Confirmar que payload inválido retorna `400 Bad Request`.
+- [x] Adicionar DataAnnotations em `CreateUserRequest`.
+- [x] Adicionar `using System.ComponentModel.DataAnnotations;` nos arquivos de request.
+- [x] Marcar `Email` como obrigatório.
+- [x] Validar `Email` com formato de email.
+- [x] Definir tamanho máximo para `Email`.
+- [x] Marcar `Password` como obrigatório.
+- [x] Definir tamanho mínimo para `Password`.
+- [x] Definir tamanho máximo para `Password`.
+- [x] Registrar no roteiro que .NET 10 tem atributos prontos como `[EmailAddress]`, `[Phone]`, `[CreditCard]`, `[Url]` e `[RegularExpression]`.
+- [x] Registrar que CPF não possui atributo nativo no .NET 10 e exige validação manual/customizada.
+- [x] Repetir as regras necessárias em `UpdateUserRequest`.
+- [x] Habilitar validação para Minimal APIs em .NET 10.
+- [x] Ler o exemplo de validação manual e comparar com DataAnnotations.
+- [x] Registrar no próprio roteiro que a implementação principal desta tarefa usa DataAnnotations.
+- [x] Não adicionar FluentValidation nesta tarefa.
+- [x] Atualizar `.http` com payload sem email.
+- [x] Atualizar `.http` com email inválido.
+- [x] Atualizar `.http` com senha curta.
+- [x] Confirmar que payload inválido retorna `400 Bad Request`.
 
 ### Checklist de saída
 
-- [ ] Requests inválidos são rejeitados antes de alterar a lista em memória.
-- [ ] Requests válidos continuam funcionando.
-- [ ] As regras estão visíveis nos DTOs.
-- [ ] A tarefa explica quais validadores prontos do .NET podem ser usados em campos futuros.
-- [ ] A tarefa deixa claro que CPF não é validador nativo do .NET.
-- [ ] A alternativa de validação manual está documentada como recurso didático.
-- [ ] Nenhuma biblioteca externa de validação foi adicionada.
-- [ ] O `.http` tem exemplos de erro de validação.
+- [x] Requests inválidos são rejeitados antes de alterar a lista em memória.
+- [x] Requests válidos continuam funcionando.
+- [x] As regras estão visíveis nos DTOs.
+- [x] A tarefa explica quais validadores prontos do .NET podem ser usados em campos futuros.
+- [x] A tarefa deixa claro que CPF não é validador nativo do .NET.
+- [x] A alternativa de validação manual está documentada como recurso didático.
+- [x] Nenhuma biblioteca externa de validação foi adicionada.
+- [x] O `.http` tem exemplos de erro de validação.
 
 ### Perguntas de autoavaliação
 
@@ -457,15 +491,15 @@ public static Dictionary<string, string[]> Validate(CreateUserRequest request)
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] Email vazio retorna `400 Bad Request`.
-- [ ] Email inválido retorna `400 Bad Request`.
-- [ ] Senha curta retorna `400 Bad Request`.
-- [ ] Request válido retorna sucesso.
+- [x] Email vazio retorna `400 Bad Request`.
+- [x] Email inválido retorna `400 Bad Request`.
+- [x] Senha curta retorna `400 Bad Request`.
+- [x] Request válido retorna sucesso.
 
 ### Referências para estudo
 
@@ -479,6 +513,8 @@ Verificar manualmente:
 - [FluentValidation License - leitura opcional](https://github.com/FluentValidation/FluentValidation/blob/main/License.txt)
 
 ## TAREFA 04.1 - Aprofundar User com contato e endereço
+
+**Status da tarefa:** [ ] Incompleta
 
 ### Apresentação
 
@@ -565,40 +601,48 @@ public sealed record UserResponse(
     string ZipCode);
 ```
 
+### Revisão didática da implementação
+
+A implementação de contato e endereço está correta, mas a tarefa continua incompleta porque falta o cenário de telefone inválido no `.http`. A correção foi carregada para a [POC3 - TAREFA 01](POC3.md#tarefa-01---completar-cobertura-manual-no-http).
+
 ### Checklist de execução
 
-- [ ] Adicionar `Phone` ao DTO de criação.
-- [ ] Adicionar `AddressLine` ao DTO de criação.
-- [ ] Adicionar `AddressComplement` ao DTO de criação como campo opcional.
-- [ ] Adicionar `City` ao DTO de criação.
-- [ ] Adicionar `State` ao DTO de criação.
-- [ ] Adicionar `ZipCode` ao DTO de criação.
-- [ ] Repetir os campos necessários no DTO de atualização.
-- [ ] Adicionar os mesmos dados ao modelo interno `User`.
-- [ ] Atualizar `UserResponse` com os dados seguros de contato e endereço.
-- [ ] Garantir que `UserResponse` continua sem `Password`.
-- [ ] Usar `[Phone]` no telefone.
-- [ ] Usar `[Required]` nos campos obrigatórios.
-- [ ] Usar `[StringLength]` nos campos de texto.
-- [ ] Usar `[RegularExpression]` para o formato de CEP.
-- [ ] Atualizar o mapeamento de `User` para `UserResponse`.
-- [ ] Atualizar o `POST /users` para preencher os novos campos.
-- [ ] Atualizar o `PUT /users/{id}` para alterar os novos campos.
-- [ ] Atualizar `.http` com um payload válido contendo telefone e endereço.
-- [ ] Atualizar `.http` com CEP inválido.
+- [x] Adicionar `Phone` ao DTO de criação.
+- [x] Adicionar `AddressLine` ao DTO de criação.
+- [x] Adicionar `AddressComplement` ao DTO de criação como campo opcional.
+- [x] Adicionar `City` ao DTO de criação.
+- [x] Adicionar `State` ao DTO de criação.
+- [x] Adicionar `ZipCode` ao DTO de criação.
+- [x] Repetir os campos necessários no DTO de atualização.
+- [x] Adicionar os mesmos dados ao modelo interno `User`.
+- [x] Atualizar `UserResponse` com os dados seguros de contato e endereço.
+- [x] Garantir que `UserResponse` continua sem `Password`.
+- [x] Usar `[Phone]` no telefone.
+- [x] Usar `[Required]` nos campos obrigatórios.
+- [x] Usar `[StringLength]` nos campos de texto.
+- [x] Usar `[RegularExpression]` para o formato de CEP.
+- [x] Atualizar o mapeamento de `User` para `UserResponse`.
+- [x] Atualizar o `POST /users` para preencher os novos campos.
+- [x] Atualizar o `PUT /users/{id}` para alterar os novos campos.
+- [x] Atualizar `.http` com um payload válido contendo telefone e endereço.
+- [x] Atualizar `.http` com CEP inválido.
 - [ ] Atualizar `.http` com telefone inválido.
-- [ ] Não adicionar biblioteca externa.
-- [ ] Não criar Value Object ainda.
+- [x] Não adicionar biblioteca externa.
+- [x] Não criar Value Object ainda.
+
+### Como concluir este checklist
+
+Siga a [POC3 - TAREFA 01](POC3.md#tarefa-01---completar-cobertura-manual-no-http), que detalha a correção do caso de telefone inválido no `.http`.
 
 ### Checklist de saída
 
-- [ ] `User` possui dados de contato e endereço.
-- [ ] Os DTOs de request validam email, senha, telefone, endereço, cidade, estado e CEP.
-- [ ] Campos opcionais usam tipo nullable.
-- [ ] Campo `Password` continua fora das responses.
-- [ ] Payload válido cria usuário com os novos campos.
-- [ ] Payload inválido retorna `400 Bad Request`.
-- [ ] O aluno consegue explicar por que `[Phone]` e regex de CEP validam formato, mas não substituem regras de negócio completas.
+- [x] `User` possui dados de contato e endereço.
+- [x] Os DTOs de request validam email, senha, telefone, endereço, cidade, estado e CEP.
+- [x] Campos opcionais usam tipo nullable.
+- [x] Campo `Password` continua fora das responses.
+- [x] Payload válido cria usuário com os novos campos.
+- [x] Payload inválido retorna `400 Bad Request`.
+- [x] O aluno consegue explicar por que `[Phone]` e regex de CEP validam formato, mas não substituem regras de negócio completas.
 
 ### Perguntas de autoavaliação
 
@@ -613,16 +657,21 @@ public sealed record UserResponse(
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] `POST /users` com email, senha, telefone e endereço válidos retorna sucesso.
-- [ ] `GET /users/{id}` mostra os dados de contato e endereço.
-- [ ] `POST /users` com CEP inválido retorna `400 Bad Request`.
-- [ ] `POST /users` com estado maior que 2 caracteres retorna `400 Bad Request`.
-- [ ] Nenhuma resposta contém `password`.
+- [x] `POST /users` com email, senha, telefone e endereço válidos retorna sucesso.
+- [x] `GET /users/{id}` mostra os dados de contato e endereço.
+- [x] `POST /users` com CEP inválido retorna `400 Bad Request`.
+- [x] `POST /users` com estado maior que 2 caracteres retorna `400 Bad Request`.
+- [ ] `POST /users` com telefone inválido está documentado no `.http`.
+- [x] Nenhuma resposta contém `password`.
+
+### Como concluir esta validação
+
+Siga a validação descrita na [POC3 - TAREFA 05](POC3.md#tarefa-05---validar-comportamento), mantendo esta tarefa desmarcada até o cenário de telefone inválido existir no `.http`.
 
 ### Referências para estudo
 
@@ -633,6 +682,8 @@ Verificar manualmente:
 - [StringLengthAttribute - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.stringlengthattribute?view=net-10.0)
 
 ## TAREFA 05 - Adicionar OpenAPI e Scalar
+
+**Status da tarefa:** [x] Completa
 
 ### Apresentação
 
@@ -671,33 +722,33 @@ Depois de subir a API, acesse `/openapi/v1.json` para ver o documento bruto e `/
 
 ### Checklist de execução
 
-- [ ] Confirmar que o projeto tem `Microsoft.AspNetCore.OpenApi`.
-- [ ] Registrar `builder.Services.AddOpenApi();`.
-- [ ] Mapear `app.MapOpenApi();` apenas em ambiente de desenvolvimento.
-- [ ] Instalar Scalar:
+- [x] Confirmar que o projeto tem `Microsoft.AspNetCore.OpenApi`.
+- [x] Registrar `builder.Services.AddOpenApi();`.
+- [x] Mapear `app.MapOpenApi();` apenas em ambiente de desenvolvimento.
+- [x] Instalar Scalar:
 
 ```bash
 dotnet add package Scalar.AspNetCore
 ```
 
-- [ ] Adicionar `using Scalar.AspNetCore;` no arquivo principal.
-- [ ] Mapear `app.MapScalarApiReference();` apenas em ambiente de desenvolvimento.
-- [ ] Adicionar `WithName` nos endpoints.
-- [ ] Adicionar `WithSummary` nos endpoints.
-- [ ] Adicionar `WithDescription` nos endpoints.
-- [ ] Declarar respostas com `Produces`.
-- [ ] Declarar erros com `ProducesProblem` ou `ProducesValidationProblem` quando aplicável.
-- [ ] Atualizar `.http` com chamada para `/openapi/v1.json`.
-- [ ] Documentar que `/openapi/v1.json` é o documento bruto.
-- [ ] Documentar que `/scalar` é a página visual para estudar e testar a API no browser.
+- [x] Adicionar `using Scalar.AspNetCore;` no arquivo principal.
+- [x] Mapear `app.MapScalarApiReference();` apenas em ambiente de desenvolvimento.
+- [x] Adicionar `WithName` nos endpoints.
+- [x] Adicionar `WithSummary` nos endpoints.
+- [x] Adicionar `WithDescription` nos endpoints.
+- [x] Declarar respostas com `Produces`.
+- [x] Declarar erros com `ProducesProblem` ou `ProducesValidationProblem` quando aplicável.
+- [x] Atualizar `.http` com chamada para `/openapi/v1.json`.
+- [x] Documentar que `/openapi/v1.json` é o documento bruto.
+- [x] Documentar que `/scalar` é a página visual para estudar e testar a API no browser.
 
 ### Checklist de saída
 
-- [ ] `/openapi/v1.json` responde em desenvolvimento.
-- [ ] `http://localhost:5291/scalar` abre a UI do Scalar no navegador.
-- [ ] A UI mostra os endpoints de usuários.
-- [ ] A UI mostra schemas de request e response.
-- [ ] A UI mostra os principais status codes.
+- [x] `/openapi/v1.json` responde em desenvolvimento.
+- [x] `http://localhost:5291/scalar` abre a UI do Scalar no navegador.
+- [x] A UI mostra os endpoints de usuários.
+- [x] A UI mostra schemas de request e response.
+- [x] A UI mostra os principais status codes.
 
 ### Perguntas de autoavaliação
 
@@ -709,13 +760,13 @@ dotnet add package Scalar.AspNetCore
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Abrir no navegador:
 
-- [ ] `http://localhost:5291/openapi/v1.json`
-- [ ] `http://localhost:5291/scalar`
+- [x] `http://localhost:5291/openapi/v1.json`
+- [x] `http://localhost:5291/scalar`
 
 ### Referências para estudo
 
@@ -724,6 +775,8 @@ Abrir no navegador:
 - [Scalar ASP.NET Core integration](https://scalar.com/products/api-references/integrations/aspnetcore/integration)
 
 ## TAREFA 06 - Padronizar erros com ProblemDetails
+
+**Status da tarefa:** [x] Completa
 
 ### Apresentação
 
@@ -762,23 +815,23 @@ O conteúdo exato pode variar conforme configuração, mas o formato deve contin
 
 ### Checklist de execução
 
-- [ ] Registrar `builder.Services.AddProblemDetails();`.
-- [ ] Configurar exception handling global.
-- [ ] Configurar status code pages quando fizer sentido.
-- [ ] Garantir que `404` retorna formato previsível.
-- [ ] Garantir que validação retorna formato previsível.
-- [ ] Evitar retornar `exception.Message` em produção.
-- [ ] Evitar `try/catch` repetitivo em cada endpoint.
-- [ ] Atualizar OpenAPI com respostas de erro quando aplicável.
-- [ ] Atualizar `.http` com `GET /users/999`.
-- [ ] Atualizar `.http` com `POST /users` inválido.
+- [x] Registrar `builder.Services.AddProblemDetails();`.
+- [x] Configurar exception handling global.
+- [x] Configurar status code pages quando fizer sentido.
+- [x] Garantir que `404` retorna formato previsível.
+- [x] Garantir que validação retorna formato previsível.
+- [x] Evitar retornar `exception.Message` em produção.
+- [x] Evitar `try/catch` repetitivo em cada endpoint.
+- [x] Atualizar OpenAPI com respostas de erro quando aplicável.
+- [x] Atualizar `.http` com `GET /users/999`.
+- [x] Atualizar `.http` com `POST /users` inválido.
 
 ### Checklist de saída
 
-- [ ] Erros comuns retornam formato previsível.
-- [ ] Mensagens internas não vazam ao cliente.
-- [ ] Endpoints continuam focados no fluxo principal.
-- [ ] O `.http` demonstra pelo menos um erro de validação e um `404`.
+- [x] Erros comuns retornam formato previsível.
+- [x] Mensagens internas não vazam ao cliente.
+- [x] Endpoints continuam focados no fluxo principal.
+- [x] O `.http` demonstra pelo menos um erro de validação e um `404`.
 
 ### Perguntas de autoavaliação
 
@@ -790,13 +843,13 @@ O conteúdo exato pode variar conforme configuração, mas o formato deve contin
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] `GET /users/999`
-- [ ] `POST /users` com payload inválido
+- [x] `GET /users/999`
+- [x] `POST /users` com payload inválido
 
 ### Referências para estudo
 
@@ -804,6 +857,8 @@ Verificar manualmente:
 - [OpenAPI metadata for ProblemDetails - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/include-metadata?view=aspnetcore-10.0)
 
 ## TAREFA 07 - Refatorar com Clean Code e rich domain model no projeto único
+
+**Status da tarefa:** [ ] Incompleta
 
 ### Apresentação
 
@@ -965,89 +1020,106 @@ public sealed class User
 
 O endpoint ou store não deve mais fazer `user.Email = request.Email` nem `user.City = request.City`. Ele deve chamar comportamentos explícitos, como `user.ChangeEmail(request.Email)` e `user.ChangeAddress(...)`.
 
+### Revisão didática da implementação
+
+A separação em arquivos e a `User` rica foram bem encaminhadas, mas a tarefa continua incompleta porque a orquestração ainda ficou no endpoint e `IUserStore` não tem atualização explícita. A correção foi carregada para a [POC3 - TAREFA 02](POC3.md#tarefa-02---dar-atualização-explícita-ao-iuserstore), [POC3 - TAREFA 03](POC3.md#tarefa-03---criar-orquestração-real-na-application) e [POC3 - TAREFA 04](POC3.md#tarefa-04---afinar-responsabilidade-dos-endpoints).
+
 ### Checklist de execução
 
-- [ ] Criar a pasta `Endpoints`.
-- [ ] Criar `Endpoints/UserEndpoints.cs`.
-- [ ] Mover o mapeamento de rotas de usuário para `UserEndpoints`.
-- [ ] Criar um método de extensão `MapUserEndpoints(this WebApplication app)` ou `MapUserEndpoints(this IEndpointRouteBuilder app)`.
-- [ ] Fazer `Program.cs` chamar apenas `app.MapUserEndpoints();` para rotas de usuário.
-- [ ] Criar a pasta `Models`.
-- [ ] Criar `Models/User.cs`.
-- [ ] Mover o modelo interno `User` para `Models/User.cs`.
-- [ ] Transformar `User` em rich class simples.
-- [ ] Trocar setters públicos por `private set`.
-- [ ] Criar factory `User.Create(...)` recebendo email, senha, telefone e endereço.
-- [ ] Criar método `ChangeEmail(email)`.
-- [ ] Criar método `ChangePassword(password)`.
-- [ ] Criar método `ChangePhone(phone)`.
-- [ ] Criar método `ChangeAddress(addressLine, complement, city, state, zipCode)`.
-- [ ] Adicionar guard clauses internas para impedir email vazio, email inválido, senha curta, endereço vazio, cidade vazia, estado inválido e CEP inválido.
-- [ ] Fazer endpoints ou store chamarem `User.Create`, `ChangeEmail`, `ChangePassword`, `ChangePhone` e `ChangeAddress`.
-- [ ] Remover alterações diretas como `user.Email = ...`, `user.Password = ...` e `user.City = ...` fora da classe `User`.
-- [ ] Manter `Password` apenas no modelo interno nesta etapa; hash entra na POC 15.
-- [ ] Criar a pasta `Requests`.
-- [ ] Criar `Requests/CreateUserRequest.cs`.
-- [ ] Criar `Requests/UpdateUserRequest.cs`.
-- [ ] Criar a pasta `Responses`.
-- [ ] Criar `Responses/UserResponse.cs`.
-- [ ] Criar a pasta `Mappings`.
-- [ ] Criar `Mappings/UserMappings.cs`.
-- [ ] Implementar método de mapeamento de `User` para `UserResponse`.
-- [ ] Criar a pasta `Services`.
-- [ ] Criar `Services/IUserStore.cs`.
+- [x] Criar a pasta `src/UserRegistration.Api/Endpoints`.
+- [x] Criar `src/UserRegistration.Api/Endpoints/UserEndpoints.cs`.
+- [x] Mover o mapeamento de rotas de usuário para `UserEndpoints`.
+- [x] Criar um método de extensão `MapUserEndpoints(this WebApplication app)` ou `MapUserEndpoints(this IEndpointRouteBuilder app)`.
+- [x] Fazer `Program.cs` chamar apenas `app.MapUserEndpoints();` para rotas de usuário.
+- [x] Criar a pasta `src/UserRegistration.Domain/Models`.
+- [x] Criar `src/UserRegistration.Domain/Models/User.cs`.
+- [x] Mover o modelo interno `User` para `src/UserRegistration.Domain/Models/User.cs`.
+- [x] Transformar `User` em rich class simples.
+- [x] Trocar setters públicos por `private set`.
+- [x] Criar factory `User.Create(...)` recebendo email, senha, telefone e endereço.
+- [x] Criar método `ChangeEmail(email)`.
+- [x] Criar método `ChangePassword(password)`.
+- [x] Criar método `ChangePhone(phone)`.
+- [x] Criar método `ChangeAddress(addressLine, complement, city, state, zipCode)`.
+- [x] Adicionar guard clauses internas para impedir email vazio, email inválido, senha curta, endereço vazio, cidade vazia, estado inválido e CEP inválido.
+- [ ] Fazer a camada `Application` chamar `User.Create`, `ChangeEmail`, `ChangePassword`, `ChangePhone` e `ChangeAddress`.
+- [x] Remover alterações diretas como `user.Email = ...`, `user.Password = ...` e `user.City = ...` fora da classe `User`.
+- [x] Manter `Password` apenas no modelo interno nesta etapa; hash entra na POC 15.
+- [x] Criar a pasta `src/UserRegistration.Api/Requests`.
+- [x] Criar `src/UserRegistration.Api/Requests/CreateUserRequest.cs`.
+- [x] Criar `src/UserRegistration.Api/Requests/UpdateUserRequest.cs`.
+- [x] Criar a pasta `src/UserRegistration.Api/Responses`.
+- [x] Criar `src/UserRegistration.Api/Responses/UserResponse.cs`.
+- [x] Criar a pasta `src/UserRegistration.Api/Mappings`.
+- [x] Criar `src/UserRegistration.Api/Mappings/UserMappings.cs`.
+- [x] Implementar método de mapeamento de `User` para `UserResponse`.
+- [x] Criar a pasta `src/UserRegistration.Application/Abstractions`.
+- [x] Criar `src/UserRegistration.Application/Abstractions/IUserStore.cs`.
 - [ ] Definir em `IUserStore` operações de listagem, busca por id, criação, atualização e remoção.
-- [ ] Criar `Services/InMemoryUserStore.cs`.
-- [ ] Mover a lista em memória para `InMemoryUserStore`.
-- [ ] Registrar `IUserStore` no DI em `Program.cs`.
-- [ ] Injetar `IUserStore` nos handlers dos endpoints.
-- [ ] Remover a lista global de usuários do arquivo principal.
-- [ ] Deixar `Program.cs` somente com builder, registro de services, middleware, OpenAPI/Scalar, ProblemDetails e `app.MapUserEndpoints();`.
-- [ ] Preservar rotas, status codes, DTOs, validação, OpenAPI e ProblemDetails já implementados.
+- [x] Criar `src/UserRegistration.Infrastructure/Users/InMemoryUserStore.cs`.
+- [x] Mover a lista em memória para `InMemoryUserStore`.
+- [x] Registrar `IUserStore` no DI em `Program.cs`.
+- [x] Injetar `IUserStore` nos handlers dos endpoints.
+- [x] Remover a lista global de usuários do arquivo principal.
+- [x] Deixar `Program.cs` somente com builder, registro de services, middleware, OpenAPI/Scalar, ProblemDetails e `app.MapUserEndpoints();`.
+- [x] Preservar rotas, status codes, DTOs, validação, OpenAPI e ProblemDetails já implementados.
+
+### Como concluir este checklist
+
+Siga a [POC3 - TAREFA 02](POC3.md#tarefa-02---dar-atualização-explícita-ao-iuserstore), a [POC3 - TAREFA 03](POC3.md#tarefa-03---criar-orquestração-real-na-application) e a [POC3 - TAREFA 04](POC3.md#tarefa-04---afinar-responsabilidade-dos-endpoints). Essas tarefas concentram os passos para atualizar o store, mover a orquestração para `Application` e afinar os endpoints.
 
 ### Estrutura esperada
 
 ```text
-Endpoints/
-  UserEndpoints.cs
-Mappings/
-  UserMappings.cs
-Models/
-  User.cs
-Requests/
-  CreateUserRequest.cs
-  UpdateUserRequest.cs
-Responses/
-  UserResponse.cs
-Services/
-  IUserStore.cs
-  InMemoryUserStore.cs
-Program.cs
+src/
+  UserRegistration.Api/
+    Endpoints/UserEndpoints.cs
+    Mappings/UserMappings.cs
+    Requests/CreateUserRequest.cs
+    Requests/UpdateUserRequest.cs
+    Responses/UserResponse.cs
+    Program.cs
+  UserRegistration.Application/
+    Abstractions/IUserStore.cs
+  UserRegistration.Domain/
+    Models/User.cs
+  UserRegistration.Infrastructure/
+    Users/InMemoryUserStore.cs
 ```
 
 ### Responsabilidades esperadas
 
-- [ ] `UserEndpoints.cs` conhece HTTP e chama o store.
-- [ ] `User.cs` representa o modelo interno em memória e protege regras básicas de usuário.
-- [ ] `CreateUserRequest.cs` representa entrada de criação.
-- [ ] `UpdateUserRequest.cs` representa entrada de atualização.
-- [ ] `UserResponse.cs` representa saída segura.
-- [ ] `UserMappings.cs` converte modelo interno para DTO de resposta.
-- [ ] `IUserStore.cs` define o contrato de armazenamento.
-- [ ] `InMemoryUserStore.cs` contém a lista em memória e suas operações.
-- [ ] `Program.cs` configura a aplicação, mas não contém regra de usuário.
+- [ ] `UserEndpoints.cs` conhece HTTP e chama a Application.
+- [x] `User.cs` representa o modelo de domínio e protege regras básicas de usuário.
+- [x] `CreateUserRequest.cs` representa entrada de criação.
+- [x] `UpdateUserRequest.cs` representa entrada de atualização.
+- [x] `UserResponse.cs` representa saída segura.
+- [x] `UserMappings.cs` converte modelo interno para DTO de resposta.
+- [x] `IUserStore.cs` define o contrato de armazenamento.
+- [x] `InMemoryUserStore.cs` contém a lista em memória e suas operações.
+- [ ] Um serviço da camada `Application` orquestra criação, atualização, busca, listagem e remoção.
+- [x] `Program.cs` configura a aplicação, mas não contém regra de usuário.
+
+### Como concluir este checklist
+
+Siga a [POC3 - TAREFA 03](POC3.md#tarefa-03---criar-orquestração-real-na-application) e a [POC3 - TAREFA 04](POC3.md#tarefa-04---afinar-responsabilidade-dos-endpoints). A POC3 detalha a divisão esperada entre `Api`, `Application`, `Domain` e `Infrastructure`.
 
 ### Checklist de saída
 
-- [ ] `Program.cs` ficou pequeno e focado em configuração.
-- [ ] Nenhuma pasta mistura request, response, modelo e endpoint no mesmo arquivo.
-- [ ] A lista em memória não está mais no arquivo principal.
-- [ ] Endpoints continuam retornando os mesmos status codes.
-- [ ] DTOs continuam protegendo senha.
-- [ ] `User` não tem setters públicos para `Email`, `Password`, `Phone`, `AddressLine`, `AddressComplement`, `City`, `State` e `ZipCode`.
-- [ ] Criação de usuário passa por `User.Create(...)`.
-- [ ] Alteração de email, senha, telefone e endereço passa por métodos da própria classe `User`.
-- [ ] Nenhuma abstração foi criada sem uso real.
+- [x] `Program.cs` ficou pequeno e focado em configuração.
+- [x] Nenhuma pasta mistura request, response, modelo e endpoint no mesmo arquivo.
+- [x] A lista em memória não está mais no arquivo principal.
+- [x] Endpoints continuam retornando os mesmos status codes.
+- [x] DTOs continuam protegendo senha.
+- [x] `User` não tem setters públicos para `Email`, `Password`, `Phone`, `AddressLine`, `AddressComplement`, `City`, `State` e `ZipCode`.
+- [x] Criação de usuário passa por `User.Create(...)`.
+- [x] Alteração de email, senha, telefone e endereço passa por métodos da própria classe `User`.
+- [ ] Criação e atualização passam por orquestração da camada `Application`, não diretamente pelo endpoint.
+- [x] Nenhuma abstração foi criada sem uso real.
+
+### Como concluir este checklist
+
+Siga os critérios de aceite da [POC3](POC3.md#critérios-de-aceite), especialmente os itens sobre `UserEndpoints`, `Change*`, `User.Create(...)` e orquestração real na camada `Application`.
 
 ### Perguntas de autoavaliação
 
@@ -1063,18 +1135,18 @@ Program.cs
 
 ```bash
 dotnet build csharp-user-registration-poc.slnx
-dotnet run --project csharp-user-registration-poc.csproj
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] `GET /users`
-- [ ] `POST /users`
-- [ ] `GET /users/{id}`
-- [ ] `PUT /users/{id}`
-- [ ] `DELETE /users/{id}`
-- [ ] `GET /openapi/v1.json`
-- [ ] `GET /scalar` no navegador
+- [x] `GET /users`
+- [x] `POST /users`
+- [x] `GET /users/{id}`
+- [x] `PUT /users/{id}`
+- [x] `DELETE /users/{id}`
+- [x] `GET /openapi/v1.json`
+- [x] `GET /scalar` no navegador
 
 ### Referências para estudo
 
@@ -1082,6 +1154,8 @@ Verificar manualmente:
 - [Minimal APIs quick reference - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-10.0)
 
 ## TAREFA 08 - Migrar para solução modular
+
+**Status da tarefa:** [ ] Incompleta
 
 ### Apresentação
 
@@ -1142,41 +1216,49 @@ dotnet sln csharp-user-registration-poc.slnx add src/UserRegistration.Api/UserRe
 
 O aluno ainda precisa adicionar referências entre projetos, mover os arquivos certos e validar que o domínio não conhece HTTP, banco, Scalar, ASP.NET Core, EF Core, DTOs ou ProblemDetails.
 
+### Revisão didática da implementação
+
+A solução modular foi criada, mas a tarefa continua incompleta porque `Application` ainda não orquestra os casos de uso. A correção foi carregada para a [POC3 - TAREFA 03](POC3.md#tarefa-03---criar-orquestração-real-na-application), [POC3 - TAREFA 04](POC3.md#tarefa-04---afinar-responsabilidade-dos-endpoints) e os [critérios de aceite da POC3](POC3.md#critérios-de-aceite).
+
 ### Checklist de execução
 
-- [ ] Criar `src/UserRegistration.Domain`.
-- [ ] Criar `src/UserRegistration.Application`.
-- [ ] Criar `src/UserRegistration.Infrastructure`.
-- [ ] Criar `src/UserRegistration.Api`.
-- [ ] Mover a `User` rica para `UserRegistration.Domain`.
-- [ ] Garantir que `UserRegistration.Domain` não possui referência a ASP.NET Core, EF Core, Scalar ou pacotes de validação HTTP.
-- [ ] Garantir que `User` não usa DataAnnotations.
-- [ ] Mover contratos de casos de uso e interfaces necessárias para `UserRegistration.Application`.
-- [ ] Mover `IUserStore` para `UserRegistration.Application`, pois a aplicação deve depender de contrato e não da implementação em memória.
-- [ ] Mover `InMemoryUserStore` para `UserRegistration.Infrastructure`.
-- [ ] Mover endpoints e configuração HTTP para `UserRegistration.Api`.
-- [ ] Remover ou substituir endpoints de exemplo criados pelo template `webapi`.
-- [ ] Manter DTOs HTTP de request e response na camada `Api`, a menos que uma tarefa futura crie contratos próprios de aplicação.
-- [ ] Configurar referências: `Application` referencia `Domain`.
-- [ ] Configurar referências: `Infrastructure` referencia `Application` e `Domain` quando necessário.
-- [ ] Configurar referências: `Api` referencia `Application` e `Infrastructure`.
-- [ ] Garantir que `Domain` não referencia ASP.NET Core.
-- [ ] Garantir que `Domain` não referencia EF Core.
-- [ ] Garantir que `Domain` não referencia DTOs, `Results` ou `ProblemDetails`.
-- [ ] Garantir que `Application` não referencia `Infrastructure`.
-- [ ] Atualizar a solution.
-- [ ] Remover o projeto antigo apenas depois que a nova API compilar e responder.
+- [x] Criar `src/UserRegistration.Domain`.
+- [x] Criar `src/UserRegistration.Application`.
+- [x] Criar `src/UserRegistration.Infrastructure`.
+- [x] Criar `src/UserRegistration.Api`.
+- [x] Mover a `User` rica para `UserRegistration.Domain`.
+- [x] Garantir que `UserRegistration.Domain` não possui referência a ASP.NET Core, EF Core, Scalar ou pacotes de validação HTTP.
+- [x] Garantir que `User` não usa DataAnnotations.
+- [x] Mover contratos de casos de uso e interfaces necessárias para `UserRegistration.Application`.
+- [x] Mover `IUserStore` para `UserRegistration.Application`, pois a aplicação deve depender de contrato e não da implementação em memória.
+- [x] Mover `InMemoryUserStore` para `UserRegistration.Infrastructure`.
+- [x] Mover endpoints e configuração HTTP para `UserRegistration.Api`.
+- [x] Remover ou substituir endpoints de exemplo criados pelo template `webapi`.
+- [x] Manter DTOs HTTP de request e response na camada `Api`, a menos que uma tarefa futura crie contratos próprios de aplicação.
+- [x] Configurar referências: `Application` referencia `Domain`.
+- [x] Configurar referências: `Infrastructure` referencia `Application` e `Domain` quando necessário.
+- [x] Configurar referências: `Api` referencia `Application` e `Infrastructure`.
+- [x] Garantir que `Domain` não referencia ASP.NET Core.
+- [x] Garantir que `Domain` não referencia EF Core.
+- [x] Garantir que `Domain` não referencia DTOs, `Results` ou `ProblemDetails`.
+- [x] Garantir que `Application` não referencia `Infrastructure`.
+- [x] Atualizar a solution.
+- [x] Remover o projeto antigo apenas depois que a nova API compilar e responder.
 
 ### Checklist de saída
 
-- [ ] A solução possui projetos separados em `src/`.
-- [ ] `Domain` contém a `User` rica e não conhece HTTP.
+- [x] A solução possui projetos separados em `src/`.
+- [x] `Domain` contém a `User` rica e não conhece HTTP.
 - [ ] `Application` contém contratos e orquestração de casos de uso.
-- [ ] `Infrastructure` contém implementação técnica do armazenamento em memória.
-- [ ] `Api` contém endpoints, OpenAPI, Scalar, ProblemDetails e configuração HTTP.
-- [ ] A direção das dependências impede que domínio dependa de infraestrutura.
-- [ ] `User` continua protegendo suas invariantes dentro de `Domain`.
-- [ ] Os endpoints existentes continuam funcionando.
+- [x] `Infrastructure` contém implementação técnica do armazenamento em memória.
+- [x] `Api` contém endpoints, OpenAPI, Scalar, ProblemDetails e configuração HTTP.
+- [x] A direção das dependências impede que domínio dependa de infraestrutura.
+- [x] `User` continua protegendo suas invariantes dentro de `Domain`.
+- [x] Os endpoints existentes continuam funcionando.
+
+### Como concluir este checklist
+
+Siga a [POC3 - TAREFA 03](POC3.md#tarefa-03---criar-orquestração-real-na-application), a [POC3 - TAREFA 04](POC3.md#tarefa-04---afinar-responsabilidade-dos-endpoints) e os [critérios de aceite da POC3](POC3.md#critérios-de-aceite). Eles concentram o fluxo esperado e os sinais objetivos de conclusão da modularização.
 
 ### Perguntas de autoavaliação
 
@@ -1190,17 +1272,17 @@ O aluno ainda precisa adicionar referências entre projetos, mover os arquivos c
 ### Validação
 
 ```bash
-dotnet build
+dotnet build csharp-user-registration-poc.slnx
 dotnet run --project src/UserRegistration.Api/UserRegistration.Api.csproj
 ```
 
 Verificar manualmente:
 
-- [ ] API sobe pelo novo projeto `UserRegistration.Api`.
-- [ ] `GET /users` continua funcionando.
-- [ ] `POST /users` continua funcionando.
-- [ ] `GET /openapi/v1.json` continua funcionando.
-- [ ] `GET /scalar` continua funcionando no navegador.
+- [x] API sobe pelo novo projeto `UserRegistration.Api`.
+- [x] `GET /users` continua funcionando.
+- [x] `POST /users` continua funcionando.
+- [x] `GET /openapi/v1.json` continua funcionando.
+- [x] `GET /scalar` continua funcionando no navegador.
 
 ### Referências para estudo
 
