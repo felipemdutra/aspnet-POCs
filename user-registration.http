@@ -73,6 +73,21 @@ Content-Type: application/json
 
 ###
 
+### Create user with invalid phone number
+POST {{HostAddr}}/users
+Content-Type: application/json
+
+{
+    "email": "invalidphone@example.com",
+    "password": "abcdefghijklmnop",
+    "phone": "+5567",
+    "addressLine": "123 Main St",
+    "addressComplement": null,
+    "city": "Sao Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+}
+
 ### Create user (invalid ZIP code - should return 400)
 POST {{HostAddr}}/users
 Content-Type: application/json

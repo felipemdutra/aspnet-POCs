@@ -19,8 +19,8 @@ public sealed class CreateUserRequest
     [StringLength(100, MinimumLength = 8)]
     public string Password { get; init; } = string.Empty;
 
-    [Phone]
-    [StringLength(30)]
+    [RegularExpression(@"^\+?\d{8,}$", ErrorMessage = "Phone format is invalid.")]
+    [StringLength(30, MinimumLength = 8, ErrorMessage = "Phone must be between 8 and 30 characters.")]
     public string? Phone { get; init; }
 
     [Required]
