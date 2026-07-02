@@ -78,16 +78,16 @@ A POC2 pediu validação de telefone inválido. Sem esse exemplo no `.http`, o a
 
 ### Checklist de execução
 
-- [ ] Abrir `csharp-user-registration-poc.http`.
-- [ ] Adicionar um `POST /users` com `phone` inválido.
-- [ ] Manter os casos existentes de sucesso, email inválido, senha curta, CEP inválido e estado inválido.
-- [ ] Executar o caso novo com a API rodando.
+- [x] Abrir `csharp-user-registration-poc.http`.
+- [x] Adicionar um `POST /users` com `phone` inválido.
+- [x] Manter os casos existentes de sucesso, email inválido, senha curta, CEP inválido e estado inválido.
+- [x] Executar o caso novo com a API rodando.
 
 ### Checklist de saída
 
-- [ ] O `.http` possui caso de telefone inválido.
-- [ ] Telefone inválido retorna `400 Bad Request`.
-- [ ] A resposta de erro vem em formato ProblemDetails.
+- [x] O `.http` possui caso de telefone inválido.
+- [x] Telefone inválido retorna `400 Bad Request`.
+- [x] A resposta de erro vem em formato ProblemDetails.
 
 ## TAREFA 02 - Dar atualização explícita ao `IUserStore`
 
@@ -97,17 +97,17 @@ Na POC2, `IUserStore` deveria representar listagem, busca, criação, atualizaç
 
 ### Checklist de execução
 
-- [ ] Abrir `src/UserRegistration.Application/Abstractions/IUserStore.cs`.
-- [ ] Adicionar uma operação explícita de atualização.
-- [ ] Implementar a operação em `src/UserRegistration.Infrastructure/Users/InMemoryUserStore.cs`.
-- [ ] Retornar `false` quando o usuário não existir.
-- [ ] Retornar `true` quando a atualização for aplicada.
+- [x] Abrir `src/UserRegistration.Application/Abstractions/IUserStore.cs`.
+- [x] Adicionar uma operação explícita de atualização.
+- [x] Implementar a operação em `src/UserRegistration.Infrastructure/Users/InMemoryUserStore.cs`.
+- [x] Retornar `false` quando o usuário não existir.
+- [x] Retornar `true` quando a atualização for aplicada.
 
 ### Checklist de saída
 
-- [ ] `IUserStore` contém listagem, busca, criação, atualização e remoção.
-- [ ] `InMemoryUserStore` implementa a atualização.
-- [ ] `PUT /users/{id}` não depende mais de mutação solta no endpoint.
+- [x] `IUserStore` contém listagem, busca, criação, atualização e remoção.
+- [x] `InMemoryUserStore` implementa a atualização.
+- [x] `PUT /users/{id}` não depende mais de mutação solta no endpoint.
 
 ## TAREFA 03 - Criar orquestração real na Application
 

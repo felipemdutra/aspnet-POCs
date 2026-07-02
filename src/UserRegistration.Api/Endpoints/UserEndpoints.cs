@@ -72,25 +72,12 @@ public static class UserEndpoints
 
         group.MapPut("/{id:long}", (long id, [FromBody] UpdateUserRequest request, IUserStore store) =>
         {
-            var user = store.GetById(id);
-            if (user is null)
-            {
-                return Results.NotFound();
-            }
+            var updatedUser = User.Create(request.Email, request.Password, request.Phone,
+                                          request.AddressLine, request.AddressComplement,
+                                          request.City, request.State, request.ZipCode);
+            store.Update(id, updatedUser);
 
-            // Behavioural methods on User keep validation and intent
-            // together instead of poking private fields from outside.
-            user.ChangeEmail(request.Email);
-            user.ChangePassword(request.Password);
-            user.ChangePhone(request.Phone);
-            user.ChangeAddress(
-                request.AddressLine,
-                request.AddressComplement,
-                request.City,
-                request.State,
-                request.ZipCode);
-
-            return Results.Ok(UserMappings.ToResponse(user));
+            return Results.Ok(UserMappings.ToResponse(updatedUser));
         })
         .WithName("UpdateUser")
         .WithSummary("Updates an existing user")

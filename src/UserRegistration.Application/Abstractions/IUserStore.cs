@@ -25,4 +25,11 @@ public interface IUserStore
     /// Returns true when something was removed, false when no user matched.
     /// </summary>
     bool Remove(long id);
+    
+    /// <summary>
+    /// Updates the user with the given id.
+    /// </summary>
+    /// <param name="id">The id of the requested user to update</param>
+    /// <returns></returns>
+    bool Update(long id, User user);
 }

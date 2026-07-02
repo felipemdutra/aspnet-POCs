@@ -47,4 +47,21 @@ public sealed class InMemoryUserStore : IUserStore
         users.Remove(user);
         return true;
     }
+
+    public bool Update(long id, User updatedUser)
+    {
+        var user = users.FirstOrDefault(u => u.Id == id);
+        if (user is null)
+        {
+            return false;
+        }
+
+        user.ChangeEmail(updatedUser.Email);
+        user.ChangePassword(updatedUser.Password);
+        user.ChangePhone(updatedUser.Phone);
+        user.ChangeAddress(updatedUser.AddressLine, updatedUser.AddressComplement,
+                           updatedUser.City, updatedUser.State, updatedUser.ZipCode);
+
+        return true;
+    }
 }
