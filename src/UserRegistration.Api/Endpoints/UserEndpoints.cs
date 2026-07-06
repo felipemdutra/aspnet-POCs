@@ -3,6 +3,7 @@ using UserRegistration.Api.Mappings;
 using UserRegistration.Api.Requests;
 using UserRegistration.Api.Responses;
 using UserRegistration.Application.Abstractions;
+using UserRegistration.Application.Users;
 using UserRegistration.Domain.Models;
 
 namespace UserRegistration.Api.Endpoints;
@@ -20,11 +21,11 @@ public static class UserEndpoints
         // configuration across all user routes.
         var group = app.MapGroup("/users");
 
-        group.MapPost("/", ([FromBody] CreateUserRequest request, IUserStore store) =>
+        group.MapPost("/", ([FromBody] CreateUserRequest request, IUserService service) =>
         {
             // Build the entity through the factory so invariants are
             // enforced even if a future caller bypasses the DTO.
-            var user = User.Create(
+            var input = new UserInput(
                 request.Email,
                 request.Password,
                 request.Phone,
@@ -34,7 +35,7 @@ public static class UserEndpoints
                 request.State,
                 request.ZipCode);
 
-            store.Add(user);
+            var user = service.Create(input);
 
             return Results.Created($"/users/{user.Id}", UserMappings.ToResponse(user));
         })
@@ -46,9 +47,9 @@ public static class UserEndpoints
         .Produces<UserResponse>(StatusCodes.Status201Created)
         .ProducesValidationProblem(StatusCodes.Status400BadRequest);
 
-        group.MapGet("/{id:long}", (long id, IUserStore store) =>
+        group.MapGet("/{id:long}", (long id, IUserService service) =>
         {
-            var user = store.GetById(id);
+            var user = service.GetById(id);
             return user is null
                 ? Results.NotFound()
                 : Results.Ok(UserMappings.ToResponse(user));
@@ -61,23 +62,27 @@ public static class UserEndpoints
         .Produces<UserResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapGet("/", (IUserStore store) =>
+        group.MapGet("/", (IUserService service) =>
         {
-            return Results.Ok(store.List().Select(UserMappings.ToResponse));
+            return Results.Ok(service.List().Select(UserMappings.ToResponse));
         })
         .WithName("GetUsers")
         .WithSummary("Gets all users")
         .WithDescription("Retrieves the full list of registered users.")
         .Produces<IEnumerable<UserResponse>>(StatusCodes.Status200OK);
 
-        group.MapPut("/{id:long}", (long id, [FromBody] UpdateUserRequest request, IUserStore store) =>
+        group.MapPut("/{id:long}", (long id, [FromBody] UpdateUserRequest request, IUserService service) =>
         {
-            var updatedUser = User.Create(request.Email, request.Password, request.Phone,
-                                          request.AddressLine, request.AddressComplement,
-                                          request.City, request.State, request.ZipCode);
-            store.Update(id, updatedUser);
+            var input = new UserInput(request.Email, request.Password, request.Phone,
+                                      request.AddressLine, request.AddressComplement,
+                                      request.City, request.State, request.ZipCode);
+            var user = service.Update(id, input);
+            if (user is null)
+            {
+                return Results.NotFound();
+            }
 
-            return Results.Ok(UserMappings.ToResponse(updatedUser));
+            return Results.Ok(UserMappings.ToResponse(user));
         })
         .WithName("UpdateUser")
         .WithSummary("Updates an existing user")
@@ -89,9 +94,9 @@ public static class UserEndpoints
         .ProducesValidationProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapDelete("/{id:long}", (long id, IUserStore store) =>
+        group.MapDelete("/{id:long}", (long id, IUserService service) =>
         {
-            return store.Remove(id)
+            return service.Delete(id)
                 ? Results.NoContent()
                 : Results.NotFound();
         })

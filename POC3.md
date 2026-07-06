@@ -117,20 +117,20 @@ A camada `Application` deve coordenar casos de uso. Ela não substitui o domíni
 
 ### Checklist de execução
 
-- [ ] Criar um tipo de entrada da Application para dados de usuário.
-- [ ] Criar um serviço concreto de Application para usuários.
-- [ ] Fazer o serviço criar usuário chamando `User.Create(...)`.
-- [ ] Fazer o serviço atualizar usuário chamando `ChangeEmail(...)`, `ChangePassword(...)`, `ChangePhone(...)` e `ChangeAddress(...)`.
-- [ ] Fazer o serviço chamar `IUserStore.Add(...)` na criação.
-- [ ] Fazer o serviço chamar `IUserStore.Update(...)` na atualização.
-- [ ] Registrar o serviço no DI.
+- [x] Criar um tipo de entrada da Application para dados de usuário.
+- [x] Criar um serviço concreto de Application para usuários.
+- [x] Fazer o serviço criar usuário chamando `User.Create(...)`.
+- [x] Fazer o serviço atualizar usuário chamando `ChangeEmail(...)`, `ChangePassword(...)`, `ChangePhone(...)` e `ChangeAddress(...)`.
+- [x] Fazer o serviço chamar `IUserStore.Add(...)` na criação.
+- [x] Fazer o serviço chamar `IUserStore.Update(...)` na atualização.
+- [x] Registrar o serviço no DI.
 
 ### Checklist de saída
 
-- [ ] A camada `Application` possui orquestração real de criação.
-- [ ] A camada `Application` possui orquestração real de atualização.
-- [ ] A camada `Domain` continua dona das invariantes.
-- [ ] A camada `Api` não conhece detalhes internos de criação e alteração da entidade.
+- [x] A camada `Application` possui orquestração real de criação.
+- [x] A camada `Application` possui orquestração real de atualização.
+- [x] A camada `Domain` continua dona das invariantes.
+- [x] A camada `Api` não conhece detalhes internos de criação e alteração da entidade.
 
 ## TAREFA 04 - Afinar responsabilidade dos endpoints
 
@@ -140,20 +140,20 @@ Endpoint deve traduzir HTTP. Ele recebe a requisição, chama a camada `Applicat
 
 ### Checklist de execução
 
-- [ ] Abrir `src/UserRegistration.Api/Endpoints/UserEndpoints.cs`.
-- [ ] Fazer `POST /users` chamar o serviço da camada `Application`.
-- [ ] Fazer `PUT /users/{id}` chamar o serviço da camada `Application`.
-- [ ] Remover chamadas diretas de `User.Create(...)` dos endpoints.
-- [ ] Remover chamadas diretas de `ChangeEmail(...)`, `ChangePassword(...)`, `ChangePhone(...)` e `ChangeAddress(...)` dos endpoints.
-- [ ] Manter DTOs HTTP na camada `Api`.
-- [ ] Manter mapeamento para `UserResponse` na camada `Api`.
+- [x] Abrir `src/UserRegistration.Api/Endpoints/UserEndpoints.cs`.
+- [x] Fazer `POST /users` chamar o serviço da camada `Application`.
+- [x] Fazer `PUT /users/{id}` chamar o serviço da camada `Application`.
+- [x] Remover chamadas diretas de `User.Create(...)` dos endpoints.
+- [x] Remover chamadas diretas de `ChangeEmail(...)`, `ChangePassword(...)`, `ChangePhone(...)` e `ChangeAddress(...)` dos endpoints.
+- [x] Manter DTOs HTTP na camada `Api`.
+- [x] Manter mapeamento para `UserResponse` na camada `Api`.
 
 ### Checklist de saída
 
-- [ ] `UserEndpoints` não cria `User` diretamente.
-- [ ] `UserEndpoints` não chama `Change*` diretamente.
-- [ ] `UserEndpoints` continua responsável por rotas, códigos de status e resposta HTTP.
-- [ ] O contrato HTTP atual não muda.
+- [x] `UserEndpoints` não cria `User` diretamente.
+- [x] `UserEndpoints` não chama `Change*` diretamente.
+- [x] `UserEndpoints` continua responsável por rotas, códigos de status e resposta HTTP.
+- [x] O contrato HTTP atual não muda.
 
 ## TAREFA 04.1 - Fechar violação de arquitetura de camadas
 
@@ -163,20 +163,20 @@ As tarefas 02, 03 e 04 corrigem partes da mesma violação: a API ainda está ex
 
 ### Checklist de execução
 
-- [ ] Executar a TAREFA 02 para dar atualização explícita ao `IUserStore`.
-- [ ] Executar a TAREFA 03 para criar orquestração real na `Application`.
-- [ ] Executar a TAREFA 04 para afinar a responsabilidade dos endpoints.
-- [ ] Rodar os comandos de verificação arquitetural listados na seção de validação.
+- [x] Executar a TAREFA 02 para dar atualização explícita ao `IUserStore`.
+- [x] Executar a TAREFA 03 para criar orquestração real na `Application`.
+- [x] Executar a TAREFA 04 para afinar a responsabilidade dos endpoints.
+- [x] Rodar os comandos de verificação arquitetural listados na seção de validação.
 
 ### Checklist de saída
 
-- [ ] Confirmar que `UserEndpoints` não injeta `IUserStore`.
-- [ ] Confirmar que `UserEndpoints` não chama `User.Create(...)`.
-- [ ] Confirmar que `UserEndpoints` não chama métodos `Change*`.
-- [ ] Confirmar que `Application` possui serviço/caso de uso para criação, atualização, busca, listagem e remoção.
-- [ ] Confirmar que `IUserStore` possui atualização explícita.
-- [ ] Confirmar que `Application` não referencia `Infrastructure`.
-- [ ] Confirmar que `Domain` segue sem ASP.NET Core, EF Core, DTOs HTTP, `Results`, `ProblemDetails` ou Scalar.
+- [x] Confirmar que `UserEndpoints` não injeta `IUserStore`.
+- [x] Confirmar que `UserEndpoints` não chama `User.Create(...)`.
+- [x] Confirmar que `UserEndpoints` não chama métodos `Change*`.
+- [x] Confirmar que `Application` possui serviço/caso de uso para criação, atualização, busca, listagem e remoção.
+- [x] Confirmar que `IUserStore` possui atualização explícita.
+- [x] Confirmar que `Application` não referencia `Infrastructure`.
+- [x] Confirmar que `Domain` segue sem ASP.NET Core, EF Core, DTOs HTTP, `Results`, `ProblemDetails` ou Scalar.
 
 ## TAREFA 05 - Validar comportamento
 
@@ -186,28 +186,28 @@ Refatoração sem validação é chute. A POC3 altera o fluxo interno, então pr
 
 ### Checklist de execução
 
-- [ ] Rodar `dotnet build csharp-user-registration-poc.slnx`.
-- [ ] Subir a API em Development.
-- [ ] Validar `GET /users`.
-- [ ] Validar `POST /users` válido.
-- [ ] Validar `PUT /users/{id}` válido.
-- [ ] Validar `DELETE /users/{id}` válido.
-- [ ] Validar `GET /users/999`.
-- [ ] Validar `POST /users` com telefone inválido.
-- [ ] Validar `/openapi/v1.json`.
-- [ ] Validar `/scalar`.
-- [ ] Conferir que nenhuma resposta contém `password`.
+- [x] Rodar `dotnet build csharp-user-registration-poc.slnx`.
+- [x] Subir a API em Development.
+- [x] Validar `GET /users`.
+- [x] Validar `POST /users` válido.
+- [x] Validar `PUT /users/{id}` válido.
+- [x] Validar `DELETE /users/{id}` válido.
+- [x] Validar `GET /users/999`.
+- [x] Validar `POST /users` com telefone inválido.
+- [x] Validar `/openapi/v1.json`.
+- [x] Validar `/scalar`.
+- [x] Conferir que nenhuma resposta contém `password`.
 
 ### Checklist de saída
 
-- [ ] A compilação passa sem avisos e erros.
-- [ ] `POST /users` retorna `201 Created`.
-- [ ] `PUT /users/{id}` retorna `200 OK`.
-- [ ] `DELETE /users/{id}` retorna `204 No Content`.
-- [ ] Usuário inexistente retorna `404 Not Found`.
-- [ ] Payload inválido retorna `400 Bad Request`.
-- [ ] OpenAPI continua respondendo.
-- [ ] Scalar continua abrindo.
+- [x] A compilação passa sem avisos e erros.
+- [x] `POST /users` retorna `201 Created`.
+- [x] `PUT /users/{id}` retorna `200 OK`.
+- [x] `DELETE /users/{id}` retorna `204 No Content`.
+- [x] Usuário inexistente retorna `404 Not Found`.
+- [x] Payload inválido retorna `400 Bad Request`.
+- [x] OpenAPI continua respondendo.
+- [x] Scalar continua abrindo.
 
 ## Fora de escopo
 
@@ -236,23 +236,23 @@ rg "UserRegistration.Infrastructure|Microsoft.AspNetCore|Scalar|ProblemDetails|R
 
 Verificar manualmente com `csharp-user-registration-poc.http`:
 
-- [ ] `GET /users`
-- [ ] `POST /users`
-- [ ] `PUT /users/{id}`
-- [ ] `DELETE /users/{id}`
-- [ ] `GET /users/999`
-- [ ] `POST /users` com telefone inválido
-- [ ] `GET /openapi/v1.json`
-- [ ] `GET /scalar`
+- [x] `GET /users`
+- [x] `POST /users`
+- [x] `PUT /users/{id}`
+- [x] `DELETE /users/{id}`
+- [x] `GET /users/999`
+- [x] `POST /users` com telefone inválido
+- [x] `GET /openapi/v1.json`
+- [x] `GET /scalar`
 
 ## Critérios de aceite
 
-- [ ] `IUserStore` tem operação de atualização clara.
-- [ ] `UserEndpoints` não cria `User` diretamente.
-- [ ] `UserEndpoints` não chama `Change*` diretamente.
-- [ ] A camada `Application` contém orquestração real de criação e atualização.
-- [ ] A auditoria de camadas não aponta mais violação de fluxo entre `Api` e `Application`.
-- [ ] `.http` cobre telefone inválido.
-- [ ] O contrato HTTP atual não muda.
-- [ ] A compilação passa sem avisos e erros.
-- [ ] O smoke test confirma `/users`, `/openapi/v1.json` e `/scalar`.
+- [x] `IUserStore` tem operação de atualização clara.
+- [x] `UserEndpoints` não cria `User` diretamente.
+- [x] `UserEndpoints` não chama `Change*` diretamente.
+- [x] A camada `Application` contém orquestração real de criação e atualização.
+- [x] A auditoria de camadas não aponta mais violação de fluxo entre `Api` e `Application`.
+- [x] `.http` cobre telefone inválido.
+- [x] O contrato HTTP atual não muda.
+- [x] A compilação passa sem avisos e erros.
+- [x] O smoke test confirma `/users`, `/openapi/v1.json` e `/scalar`.

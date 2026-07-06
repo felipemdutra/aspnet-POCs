@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
 using UserRegistration.Api.Endpoints;
+using UserRegistration.Application.Users;
 using UserRegistration.Application.Abstractions;
 using UserRegistration.Infrastructure.Users;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddValidation();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Application services. We register IUserStore as a singleton because
 // InMemoryUserStore holds state in a private list for the whole
