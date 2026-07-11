@@ -48,20 +48,15 @@ public sealed class InMemoryUserStore : IUserStore
         return true;
     }
 
-    public bool Update(long id, User updatedUser)
+    public bool Update(User user)
     {
-        var user = users.FirstOrDefault(u => u.Id == id);
-        if (user is null)
+        var i = users.FindIndex(u => u.Id == user.Id);
+        if (i < 0)
         {
             return false;
         }
 
-        user.ChangeEmail(updatedUser.Email);
-        user.ChangePassword(updatedUser.Password);
-        user.ChangePhone(updatedUser.Phone);
-        user.ChangeAddress(updatedUser.AddressLine, updatedUser.AddressComplement,
-                           updatedUser.City, updatedUser.State, updatedUser.ZipCode);
-
+        users[i] = user;
         return true;
     }
 }

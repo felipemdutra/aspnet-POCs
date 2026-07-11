@@ -31,5 +31,5 @@ public interface IUserStore
     /// </summary>
     /// <param name="id">The id of the requested user to update</param>
     /// <returns></returns>
-    bool Update(long id, User user);
+    bool Update(User user);
 }
