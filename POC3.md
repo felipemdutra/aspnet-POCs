@@ -1,5 +1,19 @@
 # POC3 - Correção das lacunas da POC2
 
+## Resultado da execução da auditoria
+
+- [x] O app original foi executado e o fluxo HTTP principal foi testado.
+- [x] O contrato HTTP atual respondeu conforme esperado: `200`, `201`, `204`, `400` e `404`.
+- [x] OpenAPI respondeu `200`.
+- [x] Scalar respondeu `302`, indicando redirecionamento para a UI.
+- [ ] O cenário de telefone inválido ainda não existe no arquivo `.http`.
+- [ ] `IUserStore` ainda não possui `Update(User user)`.
+- [ ] `Application` ainda não possui serviço de usuário com orquestração real.
+- [ ] `UserEndpoints` ainda executa criação e alteração do domínio diretamente.
+- [ ] POC3 não está concluída; nenhuma correção de código foi aplicada nesta auditoria.
+
+As instruções detalhadas para o aluno executarem essas correções estão em [POC4.md](POC4.md).
+
 A POC3 não adiciona uma tecnologia nova. Ela existe para fechar itens que já estavam pedidos na POC2 e ficaram incompletos.
 
 O objetivo é formativo: quando uma tarefa pede fronteira arquitetural, não basta mover arquivos para projetos separados. O fluxo também precisa respeitar essa fronteira.
