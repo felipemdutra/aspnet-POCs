@@ -235,6 +235,10 @@ Adicionar `POST /users` com payload válido, exceto `phone`, por exemplo `"bad"`
 - Resposta é `400 Bad Request`.
 - Corpo é erro de validação/ProblemDetails.
 
+### Defesa
+
+Request com payload válido, exceto `phone`, já existe, e já foi testado, resultando em 400 Bad Request.
+
 ## Tarefa 02 — Adicionar atualização explícita ao armazenamento
 
 ### Falha
@@ -258,6 +262,11 @@ Mutação por referência funciona acidentalmente com `List<User>`, mas não rep
 ### Aceite
 
 [`IUserStore`](</home/darthlinuxer/aspnet-POCs/src/UserRegistration.Application/Abstractions/IUserStore.cs>) declara operações CRUD completas; `PUT` usa atualização explícita; usuário inexistente continua resultando em `404`.
+
+### Defesa
+
+Método `bool Update(User user)` já existe dentro de IUserStore, e retorna `false` quando não encontra,
+e substitui o item e retorna `true` quando encontra.
 
 ## Tarefa 03 — Criar orquestração na Application
 
@@ -283,6 +292,14 @@ Application coordena o caso de uso; não duplica validações do domínio. Ela n
 ### Aceite
 
 Application orquestra criação/atualização; Domain continua dono das invariantes; Application não referencia Infrastructure.
+
+### Defesa
+
+- Tipo UserInput que não faz referência ao HTTP já existe
+- Serviço de user (UserService) existe, e implementa listagem, busca, criação, atualização e remoção.
+- Ele já utiliza `User.Create` e IUserStore.
+- Ele corretamente chama Change* e depois IUserStore.
+- Serviço já está registrado.
 
 ## Tarefa 04 — Afinar endpoints
 
@@ -322,6 +339,12 @@ Select-String -Path src/UserRegistration.Api/Endpoints/UserEndpoints.cs `
 ```
 
 Antes da correção, ocorrências são esperadas. Depois, nenhum bloco deve retornar ocorrência.
+
+### Defesa
+
+- UserEndpoints.cs não injeta IUserStore, mas IUserService.
+- UserEndpoints.cs utiliza UserInput como argumento no serviço.
+- Endpoints não chamam `Change*` e `User.Create` diretamente.
 
 ## Tarefa 05 — Corrigir aviso de dependência
 
