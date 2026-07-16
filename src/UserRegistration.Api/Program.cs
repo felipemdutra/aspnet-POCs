@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using UserRegistration.Api.Endpoints;
 using UserRegistration.Application.Users;
@@ -10,14 +11,28 @@ builder.Services.AddValidation();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Missing 'ConnectionStrings:Default' in appsettings.json");
+
+builder.Services.AddDbContext<UserDbContext>(options =>
+    options.UseSqlite(connectionString));
+
 builder.Services.AddScoped<IUserService, UserService>();
 
-// Application services. We register IUserStore as a singleton because
-// InMemoryUserStore holds state in a private list for the whole
-// process lifetime.
-builder.Services.AddSingleton<IUserStore, InMemoryUserStore>();
+// IUserStore is scoped because it depends on the scoped UserDbContext;
+// the request lifetime matches the database lifetime.
+builder.Services.AddScoped<IUserStore, EfUserStore>();
 
 var app = builder.Build();
+
+// Make sure the SQLite database and schema exist before the first
+// request reaches the application. EnsureCreated is appropriate for
+// this POC; a production system would use migrations instead.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+    db.Database.EnsureCreated();
+}
 
 // Centralised error handling: any unhandled exception becomes a
 // ProblemDetails response, and empty status code bodies are filled.

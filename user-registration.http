@@ -10,13 +10,13 @@ POST {{HostAddr}}/users
 Content-Type: application/json
 
 {
-    "email": "newuser@example.com",
-    "password": "encryptedpassword321",
-    "phone": "+5511999998888",
-    "addressLine": "123 Main St",
+    "email": "user@example.com",
+    "password": "secretpassword123",
+    "phone": "+5511997998888",
+    "addressLine": "R. Rio",
     "addressComplement": null,
-    "city": "Sao Paulo",
-    "state": "SP",
+    "city": "Rio de Janeiro",
+    "state": "RJ",
     "zipCode": "01310-100"
 }
 

@@ -42,6 +42,15 @@ appsettings.Development.json
 appsettings.*.local.json
 
 # ============================================================
+# SQLite database files (EF Core / POC4)
+# ============================================================
+
+*.db
+*.db-shm
+*.db-wal
+users.db
+
+# ============================================================
 # Test artifacts (forward-compatible with future POCs that add tests)
 # ============================================================
 

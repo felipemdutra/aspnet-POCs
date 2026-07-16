@@ -9,15 +9,13 @@ namespace UserRegistration.Domain.Models;
 /// </summary>
 public sealed class User
 {
-    private static long nextId;
-
     private static readonly Regex ZipCodePattern =
         new(@"^\d{5}-?\d{3}$", RegexOptions.Compiled);
 
     private static readonly Regex EmailPattern =
         new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
 
-    public long Id { get; }
+    public long Id { get; private set; }
 
     public string Email { get; private set; }
 
@@ -35,9 +33,6 @@ public sealed class User
 
     public string ZipCode { get; private set; }
 
-    // The constructor is private on purpose: outside code can only obtain
-    // a valid User through the factory method below, which performs all
-    // invariant checks first.
     private User(
         long id,
         string email,
@@ -60,11 +55,8 @@ public sealed class User
         ZipCode = zipCode;
     }
 
-    /// <summary>
-    /// Factory method. Builds a User only after validating every required
-    /// invariant. Throws ArgumentException if any value is
-    /// invalid, so the entity can never exist in an invalid state.
-    /// </summary>
+    // The Id is created in the persistence layer,
+    // so it's assigned as 0 here.
     public static User Create(
         string email,
         string password,
@@ -84,7 +76,7 @@ public sealed class User
         ValidateZipCode(zipCode);
 
         return new User(
-            nextId++,
+            0,
             email,
             password,
             phone,
