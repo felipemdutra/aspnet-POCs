@@ -6,6 +6,24 @@ Cada tarefa primeiro entende a limitação da etapa anterior, depois introduz o 
 
 ## Status atual da revisão
 
+### Auditoria executada em 11/07/2026
+
+- [x] O app foi executado em `http://localhost:5291`.
+- [x] `GET /users` retornou `200`.
+- [x] `GET /users/999` retornou `404` com ProblemDetails.
+- [x] `POST /users` válido retornou `201` com `Location: /users/2`.
+- [x] A resposta de criação não contém `password`.
+- [x] `PUT /users/2` retornou `200`.
+- [x] `PUT /users/999` retornou `404`.
+- [x] `DELETE /users/2` retornou `204`.
+- [x] Telefone inválido retornou `400` com resposta de validação.
+- [x] `/openapi/v1.json` retornou `200`.
+- [x] `/scalar` respondeu `302`, redirecionando para a UI.
+- [ ] Build sem avisos: compilou, mas emitiu 2 avisos `NU1903` sobre vulnerabilidade conhecida em `Microsoft.OpenApi 2.0.0`.
+- [ ] Arquitetura modular integralmente concluída: `UserEndpoints` ainda injeta `IUserStore` e chama domínio diretamente.
+
+As correções arquiteturais não foram aplicadas nesta auditoria. Elas estão descritas como trabalho do aluno em [POC4.md](POC4.md).
+
 Esta revisão avalia cada tarefa como um bloco fechado. Uma tarefa só está completa quando todos os pontos obrigatórios do roteiro foram atendidos. Quando uma tarefa tem partes corretas, mas ainda mantém pendências obrigatórias, ela fica desmarcada e a pendência é explicada na própria tarefa.
 
 Os commits da POC2 entregam boa parte do roteiro técnico esperado: semântica HTTP, DTOs, validação, OpenAPI/Scalar, ProblemDetails, `User` rica, projetos separados e separação básica entre `Api`, `Application`, `Domain` e `Infrastructure`.
