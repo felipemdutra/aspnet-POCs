@@ -51,4 +51,5 @@ if (app.Environment.IsDevelopment())
 // file stays focused on wiring and configuration.
 app.MapUserEndpoints();
 
-app.Run("http://localhost:5291");
+// no argument lets ASPNETCORE_URLS take over so no hardcoding.
+app.Run();
