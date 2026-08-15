@@ -88,3 +88,5 @@ Desktop.ini
 
 # Personal documentation not meant for the public POC
 docs/
+
+.env

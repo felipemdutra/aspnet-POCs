@@ -36,3 +36,5 @@ iniciar.sh
 **/*.trx
 **/*.coverage
 TestResults/
+
+.env

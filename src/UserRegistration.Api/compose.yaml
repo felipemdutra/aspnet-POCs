@@ -1,0 +1,35 @@
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: src/UserRegistration.Api/Dockerfile
+
+    # Name shown in docker compose ps
+    container_name: user-api
+
+    # Map container's port to our machine's port.
+    ports:
+      - "5291:5291"
+
+    restart: unless-stopped
+
+    # Environment variables passed into the container.
+    environment:
+      - ASPNETCORE_URLS=http://+:5291
+      - ConnectionStrings__Default=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+
+  db:
+    image: postgres:18
+    restart: unless-stopped 
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+volumes:
+  db-data:

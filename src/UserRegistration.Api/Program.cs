@@ -15,7 +15,7 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Missing 'ConnectionStrings:Default' in appsettings.json");
 
 builder.Services.AddDbContext<UserDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -24,15 +24,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserStore, EfUserStore>();
 
 var app = builder.Build();
-
-// Make sure the SQLite database and schema exist before the first
-// request reaches the application. EnsureCreated is appropriate for
-// this POC; a production system would use migrations instead.
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-    db.Database.EnsureCreated();
-}
 
 // Centralised error handling: any unhandled exception becomes a
 // ProblemDetails response, and empty status code bodies are filled.
