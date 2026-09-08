@@ -25,18 +25,29 @@ builder.Services.AddScoped<IUserStore, EfUserStore>();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+    db.Database.Migrate();
+}
+
 // Centralised error handling: any unhandled exception becomes a
 // ProblemDetails response, and empty status code bodies are filled.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
+bool isDev = false;
+
 // OpenAPI document and Scalar UI are only useful while developing,
 // so we gate them behind the Development environment.
 if (app.Environment.IsDevelopment())
 {
+    isDev = true;
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+Console.WriteLine($"Is development: {isDev}");
 
 // All user routes live behind a single extension method, so this
 // file stays focused on wiring and configuration.

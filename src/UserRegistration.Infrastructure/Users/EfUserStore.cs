@@ -4,12 +4,6 @@ using UserRegistration.Domain.Models;
 
 namespace UserRegistration.Infrastructure.Users;
 
-/// <summary>
-/// Entity Framework Core backed implementation of <see cref="IUserStore"/>.
-/// Persists users to the SQLite database represented by
-/// <see cref="UserDbContext"/>. Registered as a scoped service so it
-/// shares the request-scoped <see cref="UserDbContext"/>.
-/// </summary>
 public sealed class EfUserStore : IUserStore
 {
     private readonly UserDbContext _db;

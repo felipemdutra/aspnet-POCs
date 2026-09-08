@@ -17,9 +17,6 @@ public class UserDbContext : DbContext
 
         modelBuilder.Entity<User>(user =>
         {
-            // SQLite stores the table as "Users" and the primary key
-            // as the rowid (autoincrement) so EF can generate ids on
-            // Add without the domain having to track them.
             user.ToTable("Users");
             user.HasKey(u => u.Id);
 

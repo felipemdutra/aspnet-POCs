@@ -47,16 +47,10 @@ WORKDIR /app
 # Copy the published binaries from the build stage, owned by app:app.
 COPY --from=build --chown=app:app /app/publish .
 
-RUN mkdir -p /app/data && chown app:app /app/data
-
-# SQLite data lives under /app/data so a named volume can be mounted
-# here to survive container restarts.
-VOLUME ["/app/data"]
-
 # Run as the pre-created non-root "app" user that ships with the runtime
 # image. Containers should never run as root unless they really have to.
 USER app
-ENV ConnectionStrings__Default="Data Source=/app/data/users.db"
+
 # Match the port the app hard-codes in Program.cs.
 ENV ASPNETCORE_URLS=http://+:5291
 EXPOSE 5291
