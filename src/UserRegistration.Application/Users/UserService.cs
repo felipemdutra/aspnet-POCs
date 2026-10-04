@@ -8,42 +8,39 @@ public class UserService : IUserService
     private readonly IUserStore _store;
 
     public UserService(IUserStore store) => _store = store;
-    
-    public User? GetById(long id) => _store.GetById(id);
 
-    public User Create(UserInput input)
+    public User? GetByKeycloakSub(string keycloakSub) =>
+        _store.GetByKeycloakSub(keycloakSub);
+
+    public User Upsert(UserInput input)
     {
-        var user = User.Create(
-            input.Email,
-            input.Password,
-            input.Phone,
+        var existing = _store.GetByKeycloakSub(input.KeycloakSub);
+        if (existing is null)
+        {
+            var created = User.Create(
+                input.KeycloakSub,
+                input.Email,
+                input.Phone,
+                input.AddressLine,
+                input.AddressComplement,
+                input.City,
+                input.State,
+                input.ZipCode);
+
+            _store.Add(created);
+            return created;
+        }
+
+        existing.ChangeEmail(input.Email);
+        existing.ChangePhone(input.Phone);
+        existing.ChangeAddress(
             input.AddressLine,
             input.AddressComplement,
             input.City,
             input.State,
             input.ZipCode);
 
-        _store.Add(user);
-        return user;
+        _store.Update(existing);
+        return existing;
     }
-
-    public IEnumerable<User> List() => _store.List();
-
-    public User? Update(long id, UserInput input)
-    {
-        User? existing = _store.GetById(id);
-        if (existing is null)
-        {
-            return null;
-        }
-
-        existing.ChangeEmail(input.Email);
-        existing.ChangePassword(input.Password);
-        existing.ChangeAddress(input.AddressLine, input.AddressComplement, input.City, input.State, input.ZipCode);
-        existing.ChangePhone(input.Phone);
-
-        return _store.Update(existing) ? existing : null;
-    }
-
-    public bool Delete(long id) => _store.Remove(id);
 }

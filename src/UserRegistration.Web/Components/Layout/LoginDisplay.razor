@@ -1,0 +1,12 @@
+<AuthorizeView>
+    <Authorized Context="authenticationState">
+        <a href="/conta">@authenticationState.User.Identity?.Name</a>
+        <form method="post" action="/logout">
+            <AntiforgeryToken />
+            <button class="btn btn-link" type="submit">Sair</button>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/login">Entrar</a>
+    </NotAuthorized>
+</AuthorizeView>

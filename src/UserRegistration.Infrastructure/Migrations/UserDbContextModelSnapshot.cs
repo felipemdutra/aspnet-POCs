@@ -48,10 +48,10 @@ namespace UserRegistration.Infrastructure.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("KeycloakSub")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(32)

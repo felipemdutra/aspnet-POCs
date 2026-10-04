@@ -14,10 +14,6 @@ public sealed class UpdateUserRequest
     [StringLength(200)]
     public string Email { get; init; } = string.Empty;
 
-    [Required]
-    [StringLength(100, MinimumLength = 8)]
-    public string Password { get; init; } = string.Empty;
-
     [RegularExpression(@"^\+?\d{8,}$", ErrorMessage = "Invalid phone format.")]
     [StringLength(30, MinimumLength = 8, ErrorMessage = "Phone must be between 8 and 30 characters.")]
     public string? Phone { get; init; }

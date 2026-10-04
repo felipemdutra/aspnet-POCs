@@ -23,13 +23,13 @@ public class UserDbContext : DbContext
             user.Property(u => u.Id)
                 .ValueGeneratedOnAdd();
 
+            user.Property(u => u.KeycloakSub)
+                .IsRequired()
+                .HasMaxLength(64);
+
             user.Property(u => u.Email)
                 .IsRequired()
                 .HasMaxLength(254);
-
-            user.Property(u => u.Password)
-                .IsRequired()
-                .HasMaxLength(256);
 
             user.Property(u => u.Phone)
                 .HasMaxLength(32);

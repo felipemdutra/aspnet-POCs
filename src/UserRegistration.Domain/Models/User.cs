@@ -17,9 +17,9 @@ public sealed class User
 
     public long Id { get; private set; }
 
-    public string Email { get; private set; }
+    public string KeycloakSub { get; private set; }
 
-    public string Password { get; private set; }
+    public string Email { get; private set; }
 
     public string? Phone { get; private set; }
 
@@ -35,8 +35,8 @@ public sealed class User
 
     private User(
         long id,
+        string keycloakSub,
         string email,
-        string password,
         string? phone,
         string addressLine,
         string? addressComplement,
@@ -45,8 +45,8 @@ public sealed class User
         string zipCode)
     {
         Id = id;
+        KeycloakSub = keycloakSub;
         Email = email;
-        Password = password;
         Phone = phone;
         AddressLine = addressLine;
         AddressComplement = addressComplement;
@@ -58,8 +58,8 @@ public sealed class User
     // The Id is created in the persistence layer,
     // so it's assigned as 0 here.
     public static User Create(
+        string keycloakSub,
         string email,
-        string password,
         string? phone,
         string addressLine,
         string? addressComplement,
@@ -67,8 +67,8 @@ public sealed class User
         string state,
         string zipCode)
     {
+        ValidateKeycloakSub(keycloakSub);
         ValidateEmail(email);
-        ValidatePassword(password);
         ValidatePhone(phone);
         ValidateAddressLine(addressLine);
         ValidateCity(city);
@@ -77,8 +77,8 @@ public sealed class User
 
         return new User(
             0,
+            keycloakSub,
             email,
-            password,
             phone,
             addressLine,
             addressComplement,
@@ -91,12 +91,6 @@ public sealed class User
     {
         ValidateEmail(email);
         Email = email;
-    }
-
-    public void ChangePassword(string password)
-    {
-        ValidatePassword(password);
-        Password = password;
     }
 
     public void ChangePhone(string? phone)
@@ -124,6 +118,19 @@ public sealed class User
         ZipCode = zipCode;
     }
 
+    private static void ValidateKeycloakSub(string sub)
+    {
+        if (string.IsNullOrWhiteSpace(sub))
+        {
+            throw new ArgumentException("Keyclock subject is required.", nameof(sub));
+        }
+
+        if (sub.Length > 64)
+        {
+            throw new ArgumentException("Keycloak subject is too long.", nameof(sub));
+        }
+    }
+
     // Guard clauses: short, early-return checks that reject invalid input
     // before the entity can absorb it.
     private static void ValidateEmail(string email)
@@ -136,16 +143,6 @@ public sealed class User
         if (!EmailPattern.IsMatch(email))
         {
             throw new ArgumentException("Email format is invalid.", nameof(email));
-        }
-    }
-
-    private static void ValidatePassword(string password)
-    {
-        if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
-        {
-            throw new ArgumentException(
-                "Password must be at least 8 characters long.",
-                nameof(password));
         }
     }
 

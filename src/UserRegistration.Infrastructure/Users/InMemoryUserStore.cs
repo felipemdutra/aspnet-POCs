@@ -10,24 +10,22 @@ public sealed class InMemoryUserStore : IUserStore
 {
     private readonly List<User> users = new()
     {
-        User.Create(
-            "john@gmail.com",
-            "secretpassword123",
-            "+5511999999999",
-            "123 Main St",
-            null,
-            "Sao Paulo",
-            "SP",
-            "01310-100"),
-        User.Create(
-            "mary@hotmail.com",
-            "123321aa",
-            "+5511988888888",
-            "456 Oak Ave",
-            "Apt 12",
-            "Rio de Janeiro",
-            "RJ",
-            "20040-020")
+        // User.Create(
+        //     "john@gmail.com",
+        //     "+5511999999999",
+        //     "123 Main St",
+        //     null,
+        //     "Sao Paulo",
+        //     "SP",
+        //     "01310-100"),
+        // User.Create(
+        //     "mary@hotmail.com",
+        //     "+5511988888888",
+        //     "456 Oak Ave",
+        //     "Apt 12",
+        //     "Rio de Janeiro",
+        //     "RJ",
+        //     "20040-020")
     };
 
     public IEnumerable<User> List() => users;
@@ -58,5 +56,10 @@ public sealed class InMemoryUserStore : IUserStore
 
         users[i] = user;
         return true;
+    }
+    
+    public User? GetByKeycloakSub(string sub)
+    {
+        return null;
     }
 }

@@ -1,0 +1,29 @@
+@page "/conta"
+@attribute [Authorize]
+
+<PageTitle>Minha conta</PageTitle>
+
+<h1>Minha conta</h1>
+
+<AuthorizeView>
+    <Authorized Context="authenticationState">
+        <p>
+            <strong>Usuário:</strong>
+            @authenticationState.User.Identity?.Name
+        </p>
+        <p>
+            <strong>Autenticado:</strong>
+            @authenticationState.User.Identity?.IsAuthenticated
+        </p>
+
+        <h2>Dados recebidos do Keycloak</h2>
+        <dl>
+            @foreach (var claim in authenticationState.User.Claims
+                .OrderBy(claim => claim.Type))
+            {
+                <dt>@claim.Type</dt>
+                <dd>@claim.Value</dd>
+            }
+        </dl>
+    </Authorized>
+</AuthorizeView>

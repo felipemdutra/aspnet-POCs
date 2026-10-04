@@ -32,4 +32,6 @@ public interface IUserStore
     /// <param name="id">The id of the requested user to update</param>
     /// <returns></returns>
     bool Update(User user);
+
+    User? GetByKeycloakSub(string sub);
 }

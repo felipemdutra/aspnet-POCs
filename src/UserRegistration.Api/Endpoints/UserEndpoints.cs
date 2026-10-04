@@ -1,112 +1,99 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using UserRegistration.Api.Mappings;
 using UserRegistration.Api.Requests;
 using UserRegistration.Api.Responses;
 using UserRegistration.Application.Abstractions;
 using UserRegistration.Application.Users;
-using UserRegistration.Domain.Models;
 
 namespace UserRegistration.Api.Endpoints;
 
 /// <summary>
-/// Hosts every HTTP route related to users. Exposed as an extension
-/// method so Program.cs only needs to call app.MapUserEndpoints()
-/// without knowing the individual routes.
+/// Hosts every HTTP route related to the caller's user record.
+/// Identity (username, password, OTP, session) lives in Keycloak; this
+/// API only owns the user data and identifies the caller by the
+/// "sub" claim issued by Keycloak. Exposed as an extension method so
+/// Program.cs only needs to call app.MapUserEndpoints() without knowing
+/// the individual routes.
 /// </summary>
 public static class UserEndpoints
 {
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
     {
-        // MapGroup lets us share the "/users" prefix and common
-        // configuration across all user routes.
-        var group = app.MapGroup("/users");
+        // MapGroup lets us share the "/users" prefix and a single
+        // authorization gate across every route. RequireAuthorization
+        // is what forces the JwtBearer middleware to validate the
+        // access token on every request, populating HttpContext.User
+        // with the "sub" claim we use as the user key.
+        var group = app.MapGroup("/users").RequireAuthorization();
 
-        group.MapPost("/", ([FromBody] CreateUserRequest request, IUserService service) =>
+        group.MapGet("/", (ClaimsPrincipal user, IUserService service) =>
         {
-            // Build the entity through the factory so invariants are
-            // enforced even if a future caller bypasses the DTO.
-            var input = new UserInput(
-                request.Email,
-                request.Password,
-                request.Phone,
-                request.AddressLine,
-                request.AddressComplement,
-                request.City,
-                request.State,
-                request.ZipCode);
-
-            var user = service.Create(input);
-
-            return Results.Created($"/users/{user.Id}", UserMappings.ToResponse(user));
-        })
-        .WithName("CreateUser")
-        .WithSummary("Creates a new user")
-        .WithDescription(
-            "Registers a new user with the provided account and address details. " +
-            "Returns the created user resource along with its location URI.")
-        .Produces<UserResponse>(StatusCodes.Status201Created)
-        .ProducesValidationProblem(StatusCodes.Status400BadRequest);
-
-        group.MapGet("/{id:long}", (long id, IUserService service) =>
-        {
-            var user = service.GetById(id);
-            return user is null
-                ? Results.NotFound()
-                : Results.Ok(UserMappings.ToResponse(user));
-        })
-        .WithName("GetUserById")
-        .WithSummary("Gets a user by ID")
-        .WithDescription(
-            "Retrieves the details of a single user identified by their numeric ID. " +
-            "Returns 404 if no user with the given ID exists.")
-        .Produces<UserResponse>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status404NotFound);
-
-        group.MapGet("/", (IUserService service) =>
-        {
-            return Results.Ok(service.List().Select(UserMappings.ToResponse));
-        })
-        .WithName("GetUsers")
-        .WithSummary("Gets all users")
-        .WithDescription("Retrieves the full list of registered users.")
-        .Produces<IEnumerable<UserResponse>>(StatusCodes.Status200OK);
-
-        group.MapPut("/{id:long}", (long id, [FromBody] UpdateUserRequest request, IUserService service) =>
-        {
-            var input = new UserInput(request.Email, request.Password, request.Phone,
-                                      request.AddressLine, request.AddressComplement,
-                                      request.City, request.State, request.ZipCode);
-            var user = service.Update(id, input);
-            if (user is null)
+            var sub = user.FindFirstValue("sub");
+            if (string.IsNullOrWhiteSpace(sub))
             {
-                return Results.NotFound();
+                // The token passed signature/issuer/audience/lifetime
+                // checks but still didn't carry a "sub". Treat it as
+                // an authentication failure rather than a 500.
+                return Results.Problem(
+                    statusCode: StatusCodes.Status401Unauthorized,
+                    title: "Missing 'sub' claim");
             }
 
-            return Results.Ok(UserMappings.ToResponse(user));
+            var userRecord = service.GetByKeycloakSub(sub);
+            return userRecord is null
+                ? Results.NotFound()
+                : Results.Ok(UserMappings.ToResponse(userRecord));
         })
-        .WithName("UpdateUser")
-        .WithSummary("Updates an existing user")
+        .WithName("GetUser")
+        .WithSummary("Gets the caller's user")
         .WithDescription(
-            "Replaces the account and address details of the user identified by the " +
-            "given ID with the values provided in the request body. " +
-            "Returns 404 if no user with the given ID exists.")
+            "Returns the user (email, phone, address) linked to the " +
+            "authenticated caller's Keycloak 'sub'. Returns 404 if no user has " +
+            "been created yet.")
         .Produces<UserResponse>(StatusCodes.Status200OK)
-        .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapDelete("/{id:long}", (long id, IUserService service) =>
+        group.MapPut("/", (
+            [FromBody] UpdateUserRequest request,
+            ClaimsPrincipal user,
+            IUserService service) =>
         {
-            return service.Delete(id)
-                ? Results.NoContent()
-                : Results.NotFound();
+            var sub = user.FindFirstValue("sub");
+            if (string.IsNullOrWhiteSpace(sub))
+            {
+                return Results.Problem(
+                    statusCode: StatusCodes.Status401Unauthorized,
+                    title: "Missing 'sub' claim");
+            }
+
+            // The "sub" comes from the validated access token, never
+            // from the request body. That keeps the caller from
+            // impersonating another user by sending a different value.
+            var input = new UserInput(
+                KeycloakSub: sub,
+                Email:       request.Email,
+                Phone:       request.Phone,
+                AddressLine: request.AddressLine,
+                AddressComplement: request.AddressComplement,
+                City:        request.City,
+                State:       request.State,
+                ZipCode:     request.ZipCode);
+
+            var userRecord = service.Upsert(input);
+            return Results.Ok(UserMappings.ToResponse(userRecord));
         })
-        .WithName("DeleteUser")
-        .WithSummary("Deletes a user")
+        .WithName("UpsertUser")
+        .WithSummary("Creates or updates the caller's user")
         .WithDescription(
-            "Permanently removes the user identified by the given ID. " +
-            "Returns 404 if no user with the given ID exists, or 204 if the deletion succeeds.")
-        .Produces(StatusCodes.Status204NoContent)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+            "Upserts the user (email, phone, address) linked to the " +
+            "authenticated caller's Keycloak 'sub'. The 'sub' is taken from the " +
+            "validated access token, not from the request body, so the caller " +
+            "cannot create or modify a user that belongs to someone else.")
+        .Produces<UserResponse>(StatusCodes.Status200OK)
+        .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         return app;
     }

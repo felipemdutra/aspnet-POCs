@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using UserRegistration.Api.Endpoints;
@@ -23,6 +25,28 @@ builder.Services.AddScoped<IUserService, UserService>();
 // the request lifetime matches the database lifetime.
 builder.Services.AddScoped<IUserStore, EfUserStore>();
 
+var keycloak = builder.Configuration.GetSection("Authentication:Keycloak");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opts =>
+    {
+        opts.Authority = keycloak["Authority"];
+        opts.Audience = keycloak["ClientId"];
+        opts.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        opts.MapInboundClaims = false;
+        opts.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "preferred_username",
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -31,23 +55,21 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Centralised error handling: any unhandled exception becomes a
 // ProblemDetails response, and empty status code bodies are filled.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
-bool isDev = false;
-
 // OpenAPI document and Scalar UI are only useful while developing,
 // so we gate them behind the Development environment.
 if (app.Environment.IsDevelopment())
 {
-    isDev = true;
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
-
-Console.WriteLine($"Is development: {isDev}");
 
 // All user routes live behind a single extension method, so this
 // file stays focused on wiring and configuration.

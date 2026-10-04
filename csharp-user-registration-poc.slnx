@@ -4,5 +4,6 @@
     <Project Path="src/UserRegistration.Application/UserRegistration.Application.csproj" />
     <Project Path="src/UserRegistration.Domain/UserRegistration.Domain.csproj" />
     <Project Path="src/UserRegistration.Infrastructure/UserRegistration.Infrastructure.csproj" />
+    <Project Path="src/UserRegistration.Web/UserRegistration.Web.csproj" />
   </Folder>
 </Solution>

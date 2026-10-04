@@ -56,4 +56,9 @@ public sealed class EfUserStore : IUserStore
         _db.SaveChanges();
         return true;
     }
+
+    public User? GetByKeycloakSub(string keycloakSub) =>
+        _db.Users
+            .AsNoTracking()
+            .FirstOrDefault(u => u.KeycloakSub == keycloakSub);
 }
